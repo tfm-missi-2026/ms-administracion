@@ -1,0 +1,62 @@
+# =============================================================
+# Orquestacion STANDALONE de ms-administracion
+# Levanta SOLO este microservicio + su PostgreSQL, sin Eureka.
+#
+#   cp .env.example .env
+#   docker compose up -d --build
+#   # API:    http://localhost:8081
+#   # Health: http://localhost:8081/actuator/health
+#
+# Para el stack completo usa el repo `orquestacion`.
+# Si levantas varios servicios standalone a la vez, cambia APP_PORT y DB_PORT en .env.
+# =============================================================
+name: ms-administracion
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: msa-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-spsrt_administracion}
+      POSTGRES_USER: ${DB_USER:-spsrt_administracion_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-spsrt_administracion_pwd}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - msa-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-spsrt_administracion_user} -d ${DB_NAME:-spsrt_administracion}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - msa-net
+
+  ms-administracion:
+    build:
+      context: .
+    container_name: msa-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-spsrt_administracion}
+      DB_USER: ${DB_USER:-spsrt_administracion_user}
+      DB_PASSWORD: ${DB_PASSWORD:-spsrt_administracion_pwd}
+      JWT_SECRET: ${JWT_SECRET:-cambiar-esta-clave-en-produccion-minimo-32-bytes-aleatorios}
+      EUREKA_CLIENT_ENABLED: "false"
+    ports:
+      - "${APP_PORT:-8081}:8081"
+    networks:
+      - msa-net
+
+volumes:
+  msa-postgres-data:
+    name: msa-postgres-data
+
+networks:
+  msa-net:
+    name: msa-net
+    driver: bridge

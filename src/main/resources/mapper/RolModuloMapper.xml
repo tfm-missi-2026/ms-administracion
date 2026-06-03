@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pe.unir.tfm.srp.administracion.repository.RolModuloMapper">
+
+    <select id="listarPorRol" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.RolModulo">
+        SELECT id, rol_id, modulo_id,
+               estado, fecha_creacion, usuario_creacion,
+               fecha_modificacion, usuario_modificacion,
+               fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
+          FROM msa_rol_modulo
+         WHERE rol_id = #{rolId} AND fecha_eliminacion IS NULL AND estado = 1
+    </select>
+
+    <select id="contar" resultType="int">
+        SELECT COUNT(*) FROM msa_rol_modulo
+         WHERE rol_id = #{rolId} AND modulo_id = #{moduloId} AND fecha_eliminacion IS NULL
+    </select>
+
+    <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.RolModulo">
+        INSERT INTO msa_rol_modulo (id, rol_id, modulo_id, estado, fecha_creacion, usuario_creacion)
+        VALUES (#{id}, #{rolId}, #{moduloId}, #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+    </insert>
+
+    <delete id="eliminarFisicoPorRol" parameterType="java.util.UUID">
+        DELETE FROM msa_rol_modulo WHERE rol_id = #{rolId}
+    </delete>
+
+</mapper>

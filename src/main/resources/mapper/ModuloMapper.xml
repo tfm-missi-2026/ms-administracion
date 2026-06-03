@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pe.unir.tfm.srp.administracion.repository.ModuloMapper">
+
+    <sql id="selectAll">
+        SELECT id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion,
+               estado, fecha_creacion, usuario_creacion,
+               fecha_modificacion, usuario_modificacion,
+               fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
+          FROM msa_modulo
+    </sql>
+
+    <select id="buscarPorId" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        WHERE id = #{id} AND fecha_eliminacion IS NULL
+    </select>
+
+    <select id="buscarPorCodigo" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        WHERE codigo = #{codigo} AND fecha_eliminacion IS NULL
+    </select>
+
+    <select id="listarActivos" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        WHERE fecha_eliminacion IS NULL AND estado = 1
+        ORDER BY modulo_padre_id NULLS FIRST, orden
+    </select>
+
+    <select id="listarPorRol" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        SELECT m.id, m.codigo, m.nombre, m.ruta, m.icono, m.orden, m.modulo_padre_id, m.descripcion,
+               m.estado, m.fecha_creacion, m.usuario_creacion,
+               m.fecha_modificacion, m.usuario_modificacion,
+               m.fecha_eliminacion, m.usuario_eliminacion, m.motivo_eliminacion
+          FROM msa_modulo m
+          JOIN msa_rol_modulo rm ON rm.modulo_id = m.id
+         WHERE rm.rol_id = #{rolId}
+           AND m.fecha_eliminacion IS NULL AND m.estado = 1
+           AND rm.fecha_eliminacion IS NULL AND rm.estado = 1
+         ORDER BY m.modulo_padre_id NULLS FIRST, m.orden
+    </select>
+
+    <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
+        INSERT INTO msa_modulo (id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion,
+                                estado, fecha_creacion, usuario_creacion)
+        VALUES (#{id}, #{codigo}, #{nombre}, #{ruta}, #{icono}, #{orden}, #{moduloPadreId}, #{descripcion},
+                #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+    </insert>
+
+    <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
+        UPDATE msa_modulo
+           SET nombre = #{nombre},
+               ruta = #{ruta},
+               icono = #{icono},
+               orden = #{orden},
+               modulo_padre_id = #{moduloPadreId},
+               descripcion = #{descripcion},
+               estado = #{estado},
+               fecha_modificacion = #{fechaModificacion},
+               usuario_modificacion = #{usuarioModificacion}
+         WHERE id = #{id} AND fecha_eliminacion IS NULL
+    </update>
+
+    <update id="eliminarLogico">
+        UPDATE msa_modulo
+           SET fecha_eliminacion = NOW(),
+               usuario_eliminacion = #{usuarioEliminacion},
+               motivo_eliminacion = #{motivoEliminacion},
+               estado = 0
+         WHERE id = #{id} AND fecha_eliminacion IS NULL
+    </update>
+
+</mapper>

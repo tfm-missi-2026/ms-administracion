@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="pe.unir.tfm.srp.administracion.repository.UsuarioMapper">
+
+    <resultMap id="usuarioConRol" type="pe.unir.tfm.srp.administracion.model.Usuario">
+        <id     property="id"                   column="id"/>
+        <result property="email"                column="email"/>
+        <result property="contrasenia"          column="contrasenia"/>
+        <result property="nombres"              column="nombres"/>
+        <result property="apellidoPaterno"      column="apellido_paterno"/>
+        <result property="apellidoMaterno"      column="apellido_materno"/>
+        <result property="rolId"                column="rol_id"/>
+        <result property="estado"               column="estado"/>
+        <result property="fechaCreacion"        column="fecha_creacion"/>
+        <result property="usuarioCreacion"      column="usuario_creacion"/>
+        <result property="fechaModificacion"    column="fecha_modificacion"/>
+        <result property="usuarioModificacion"  column="usuario_modificacion"/>
+        <result property="fechaEliminacion"     column="fecha_eliminacion"/>
+        <result property="usuarioEliminacion"   column="usuario_eliminacion"/>
+        <result property="motivoEliminacion"    column="motivo_eliminacion"/>
+        <association property="rol" javaType="pe.unir.tfm.srp.administracion.model.Rol">
+            <id     property="id"           column="rol_uuid"/>
+            <result property="codigo"       column="rol_codigo"/>
+            <result property="nombre"       column="rol_nombre"/>
+            <result property="descripcion"  column="rol_descripcion"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectUsuarioRol">
+        SELECT u.id, u.email, u.contrasenia, u.nombres, u.apellido_paterno, u.apellido_materno,
+               u.rol_id, u.estado, u.fecha_creacion, u.usuario_creacion,
+               u.fecha_modificacion, u.usuario_modificacion,
+               u.fecha_eliminacion, u.usuario_eliminacion, u.motivo_eliminacion,
+               r.id          AS rol_uuid,
+               r.codigo      AS rol_codigo,
+               r.nombre      AS rol_nombre,
+               r.descripcion AS rol_descripcion
+          FROM msa_usuario u
+          JOIN msa_rol r ON r.id = u.rol_id
+    </sql>
+
+    <select id="buscarPorId" parameterType="java.util.UUID" resultMap="usuarioConRol">
+        <include refid="selectUsuarioRol"/>
+        WHERE u.id = #{id} AND u.fecha_eliminacion IS NULL
+    </select>
+
+    <select id="buscarPorEmail" parameterType="string" resultMap="usuarioConRol">
+        <include refid="selectUsuarioRol"/>
+        WHERE u.email = #{email} AND u.fecha_eliminacion IS NULL
+    </select>
+
+    <select id="listarActivos" resultMap="usuarioConRol">
+        <include refid="selectUsuarioRol"/>
+        WHERE u.fecha_eliminacion IS NULL AND u.estado = 1
+        ORDER BY u.apellido_paterno, u.apellido_materno, u.nombres
+    </select>
+
+    <select id="contarPorEmail" parameterType="string" resultType="int">
+        SELECT COUNT(*) FROM msa_usuario WHERE email = #{email} AND fecha_eliminacion IS NULL
+    </select>
+
+    <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
+        INSERT INTO msa_usuario (id, email, contrasenia, nombres, apellido_paterno, apellido_materno,
+                                 rol_id, estado, fecha_creacion, usuario_creacion)
+        VALUES (#{id}, #{email}, #{contrasenia}, #{nombres}, #{apellidoPaterno}, #{apellidoMaterno},
+                #{rolId}, #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+    </insert>
+
+    <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
+        UPDATE msa_usuario
+           SET email = #{email},
+               nombres = #{nombres},
+               apellido_paterno = #{apellidoPaterno},
+               apellido_materno = #{apellidoMaterno},
+               rol_id = #{rolId},
+               estado = #{estado},
+               fecha_modificacion = #{fechaModificacion},
+               usuario_modificacion = #{usuarioModificacion}
+         WHERE id = #{id} AND fecha_eliminacion IS NULL
+    </update>
+
+    <update id="eliminarLogico">
+        UPDATE msa_usuario
+           SET fecha_eliminacion = NOW(),
+               usuario_eliminacion = #{usuarioEliminacion},
+               motivo_eliminacion = #{motivoEliminacion},
+               estado = 0
+         WHERE id = #{id} AND fecha_eliminacion IS NULL
+    </update>
+
+</mapper>
