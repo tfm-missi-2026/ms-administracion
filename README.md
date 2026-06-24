@@ -47,6 +47,29 @@ iniciales), así que el **login funciona sin pasos extra**.
 > Es el **emisor del JWT** que validan el gateway y los demás microservicios; todos deben
 > compartir el mismo `JWT_SECRET`.
 
+## Desarrollo local en IntelliJ (perfil `dev`)
+
+Para iterar rápido sin rebuildear la imagen Docker, corré **solo este servicio** desde
+IntelliJ (▶ Run de la clase `@SpringBootApplication`) y dejá su PostgreSQL en Docker:
+
+```bash
+cd ../../orquestacion && docker compose up -d postgres
+```
+
+El perfil **`dev`** desactiva la exigencia de JWT e inyecta un usuario simulado (admin del
+seed, con todos los roles), así probás los endpoints protegidos **sin token**. Activalo de una
+de estas formas:
+
+- **Run Configuration** → campo *Active profiles*: `dev`, **o**
+- VM options: `-Dspring.profiles.active=dev`, **o**
+- Variable de entorno: `SPRING_PROFILES_ACTIVE=dev`
+
+Con el perfil activo, pegale directo: `GET http://localhost:8081/api/usuarios` (sin header
+`Authorization`) → responde `200`.
+
+> ⚠️ El perfil `dev` **solo** aplica corriendo así. En Docker / `orquestacion` / producción
+> (sin perfil) la seguridad JWT sigue intacta.
+
 ## Dentro del stack completo
 
 Para correrlo junto a Eureka, el gateway y los demás microservicios, usa el repo
