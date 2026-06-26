@@ -6,6 +6,5 @@ import jakarta.validation.constraints.Size;
 
 public record RolActualizarRequest(
     @NotBlank @Size(max = 100) String nombre,
-    @Size(max = 500) String descripcion,
-    @NotNull Short estado
+    @Size(max = 500) String descripcion
 ) {}

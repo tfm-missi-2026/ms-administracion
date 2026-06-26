@@ -71,7 +71,6 @@ public class RolService {
         }
         existente.setNombre(request.nombre());
         existente.setDescripcion(request.descripcion());
-        existente.setEstado(request.estado());
         rolMapper.actualizar(existente);
         return rolConversor.aRolResponse(existente);
     }

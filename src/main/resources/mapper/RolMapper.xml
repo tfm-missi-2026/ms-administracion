@@ -8,7 +8,7 @@
                fecha_modificacion, usuario_modificacion,
                fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
           FROM msa_rol
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </select>
 
     <select id="buscarPorCodigo" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Rol">
@@ -17,7 +17,7 @@
                fecha_modificacion, usuario_modificacion,
                fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
           FROM msa_rol
-         WHERE codigo = #{codigo} AND fecha_eliminacion IS NULL
+         WHERE codigo = #{codigo} AND estado = 1
     </select>
 
     <select id="listarActivos" resultType="pe.unir.tfm.srp.administracion.model.Rol">
@@ -26,23 +26,22 @@
                fecha_modificacion, usuario_modificacion,
                fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
           FROM msa_rol
-         WHERE fecha_eliminacion IS NULL AND estado = 1
+         WHERE estado = 1
          ORDER BY nombre
     </select>
 
     <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Rol">
         INSERT INTO msa_rol (id, codigo, nombre, descripcion, estado, fecha_creacion, usuario_creacion)
-        VALUES (#{id}, #{codigo}, #{nombre}, #{descripcion}, #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+        VALUES (#{id}, #{codigo}, #{nombre}, #{descripcion}, 1, NOW(), #{usuarioCreacion})
     </insert>
 
     <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Rol">
         UPDATE msa_rol
            SET nombre = #{nombre},
                descripcion = #{descripcion},
-               estado = #{estado},
-               fecha_modificacion = #{fechaModificacion},
+               fecha_modificacion = NOW(),
                usuario_modificacion = #{usuarioModificacion}
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
     <update id="eliminarLogico">
@@ -51,7 +50,7 @@
                usuario_eliminacion = #{usuarioEliminacion},
                motivo_eliminacion = #{motivoEliminacion},
                estado = 0
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
 </mapper>

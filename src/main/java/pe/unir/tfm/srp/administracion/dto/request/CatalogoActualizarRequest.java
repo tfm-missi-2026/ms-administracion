@@ -7,6 +7,5 @@ import jakarta.validation.constraints.Size;
 public record CatalogoActualizarRequest(
     @NotBlank @Size(max = 50) String grupo,
     @NotNull Short idOpcion,
-    @NotBlank @Size(max = 150) String opcion,
-    @NotNull Short estado
+    @NotBlank @Size(max = 150) String opcion
 ) {}

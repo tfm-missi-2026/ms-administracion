@@ -12,17 +12,17 @@
 
     <select id="buscarPorId" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
-        WHERE id = #{id} AND fecha_eliminacion IS NULL
+        WHERE id = #{id} AND estado = 1
     </select>
 
     <select id="buscarPorCodigo" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
-        WHERE codigo = #{codigo} AND fecha_eliminacion IS NULL
+        WHERE codigo = #{codigo} AND estado = 1
     </select>
 
     <select id="listarActivos" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
-        WHERE fecha_eliminacion IS NULL AND estado = 1
+        WHERE estado = 1
         ORDER BY modulo_padre_id NULLS FIRST, orden
     </select>
 
@@ -34,8 +34,8 @@
           FROM msa_modulo m
           JOIN msa_rol_modulo rm ON rm.modulo_id = m.id
          WHERE rm.rol_id = #{rolId}
-           AND m.fecha_eliminacion IS NULL AND m.estado = 1
-           AND rm.fecha_eliminacion IS NULL AND rm.estado = 1
+           AND m.estado = 1
+           AND rm.estado = 1
          ORDER BY m.modulo_padre_id NULLS FIRST, m.orden
     </select>
 
@@ -43,7 +43,7 @@
         INSERT INTO msa_modulo (id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion,
                                 estado, fecha_creacion, usuario_creacion)
         VALUES (#{id}, #{codigo}, #{nombre}, #{ruta}, #{icono}, #{orden}, #{moduloPadreId}, #{descripcion},
-                #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+                1, NOW(), #{usuarioCreacion})
     </insert>
 
     <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
@@ -54,10 +54,9 @@
                orden = #{orden},
                modulo_padre_id = #{moduloPadreId},
                descripcion = #{descripcion},
-               estado = #{estado},
-               fecha_modificacion = #{fechaModificacion},
+               fecha_modificacion = NOW(),
                usuario_modificacion = #{usuarioModificacion}
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
     <update id="eliminarLogico">
@@ -66,7 +65,7 @@
                usuario_eliminacion = #{usuarioEliminacion},
                motivo_eliminacion = #{motivoEliminacion},
                estado = 0
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
 </mapper>

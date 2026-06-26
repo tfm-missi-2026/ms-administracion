@@ -12,6 +12,5 @@ public record UsuarioActualizarRequest(
     @NotBlank @Size(max = 100) String nombres,
     @NotBlank @Size(max = 100) String apellidoPaterno,
     @NotBlank @Size(max = 100) String apellidoMaterno,
-    @NotNull UUID rolId,
-    @NotNull Short estado
+    @NotNull UUID rolId
 ) {}

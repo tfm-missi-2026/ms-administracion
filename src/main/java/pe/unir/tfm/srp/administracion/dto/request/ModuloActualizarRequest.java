@@ -12,6 +12,5 @@ public record ModuloActualizarRequest(
     @Size(max = 50) String icono,
     @NotNull Short orden,
     UUID moduloPadreId,
-    String descripcion,
-    @NotNull Short estado
+    String descripcion
 ) {}

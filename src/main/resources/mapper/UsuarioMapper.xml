@@ -41,29 +41,29 @@
 
     <select id="buscarPorId" parameterType="java.util.UUID" resultMap="usuarioConRol">
         <include refid="selectUsuarioRol"/>
-        WHERE u.id = #{id} AND u.fecha_eliminacion IS NULL
+        WHERE u.id = #{id} AND u.estado = 1
     </select>
 
     <select id="buscarPorEmail" parameterType="string" resultMap="usuarioConRol">
         <include refid="selectUsuarioRol"/>
-        WHERE u.email = #{email} AND u.fecha_eliminacion IS NULL
+        WHERE u.email = #{email} AND u.estado = 1
     </select>
 
     <select id="listarActivos" resultMap="usuarioConRol">
         <include refid="selectUsuarioRol"/>
-        WHERE u.fecha_eliminacion IS NULL AND u.estado = 1
+        WHERE u.estado = 1
         ORDER BY u.apellido_paterno, u.apellido_materno, u.nombres
     </select>
 
     <select id="contarPorEmail" parameterType="string" resultType="int">
-        SELECT COUNT(*) FROM msa_usuario WHERE email = #{email} AND fecha_eliminacion IS NULL
+        SELECT COUNT(*) FROM msa_usuario WHERE email = #{email} AND estado = 1
     </select>
 
     <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
         INSERT INTO msa_usuario (id, email, contrasenia, nombres, apellido_paterno, apellido_materno,
                                  rol_id, estado, fecha_creacion, usuario_creacion)
         VALUES (#{id}, #{email}, #{contrasenia}, #{nombres}, #{apellidoPaterno}, #{apellidoMaterno},
-                #{rolId}, #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+                #{rolId}, 1, NOW(), #{usuarioCreacion})
     </insert>
 
     <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
@@ -73,10 +73,9 @@
                apellido_paterno = #{apellidoPaterno},
                apellido_materno = #{apellidoMaterno},
                rol_id = #{rolId},
-               estado = #{estado},
-               fecha_modificacion = #{fechaModificacion},
+               fecha_modificacion = NOW(),
                usuario_modificacion = #{usuarioModificacion}
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
     <update id="eliminarLogico">
@@ -85,7 +84,7 @@
                usuario_eliminacion = #{usuarioEliminacion},
                motivo_eliminacion = #{motivoEliminacion},
                estado = 0
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
 </mapper>

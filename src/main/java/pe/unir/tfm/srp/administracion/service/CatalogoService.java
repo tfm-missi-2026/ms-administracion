@@ -67,7 +67,6 @@ public class CatalogoService {
         existente.setGrupo(request.grupo());
         existente.setIdOpcion(request.idOpcion());
         existente.setOpcion(request.opcion());
-        existente.setEstado(request.estado());
         catalogoMapper.actualizar(existente);
         return catalogoConversor.aCatalogoResponse(existente);
     }

@@ -1,7 +1,6 @@
 package pe.unir.tfm.srp.administracion.config;
 
 import java.lang.reflect.Field;
-import java.time.LocalDateTime;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -49,16 +48,13 @@ public class AuditoriaInterceptor implements Interceptor {
 
     private void poblarAuditoria(Object parametro, SqlCommandType tipo) {
         UUID actor = currentUserResolver.obtenerUsuarioActualId();
-        LocalDateTime ahora = LocalDateTime.now();
 
         if (tipo == SqlCommandType.INSERT) {
-            setSiNull(parametro, "fechaCreacion", ahora);
             setSiNull(parametro, "usuarioCreacion", actor);
-            setSiNull(parametro, "estado", (short) 1);
-            // En INSERT no se tocan fechaModificacion / usuarioModificacion (quedan NULL hasta el primer UPDATE)
+            // estado (=1) y fecha_creacion (=NOW()) los pone el INSERT del mapper (reloj de la BD)
         } else if (tipo == SqlCommandType.UPDATE) {
-            setSiNull(parametro, "fechaModificacion", ahora);
             setSiNull(parametro, "usuarioModificacion", actor);
+            // fecha_modificacion (=NOW()) la pone el UPDATE del mapper (reloj de la BD)
         }
     }
 

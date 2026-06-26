@@ -99,7 +99,6 @@ public class UsuarioService {
         existente.setApellidoPaterno(request.apellidoPaterno());
         existente.setApellidoMaterno(request.apellidoMaterno());
         existente.setRolId(request.rolId());
-        existente.setEstado(request.estado());
         usuarioMapper.actualizar(existente);
         existente.setRol(rol);
         return usuarioConversor.aUsuarioResponse(existente);

@@ -12,29 +12,29 @@
 
     <select id="buscarPorId" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
         <include refid="selectAll"/>
-        WHERE id = #{id} AND fecha_eliminacion IS NULL
+        WHERE id = #{id} AND estado = 1
     </select>
 
     <select id="listarPorGrupo" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
         <include refid="selectAll"/>
-        WHERE grupo = #{grupo} AND fecha_eliminacion IS NULL AND estado = 1
+        WHERE grupo = #{grupo} AND estado = 1
         ORDER BY id_opcion
     </select>
 
     <select id="listarActivos" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
         <include refid="selectAll"/>
-        WHERE fecha_eliminacion IS NULL AND estado = 1
+        WHERE estado = 1
         ORDER BY grupo, id_opcion
     </select>
 
     <select id="contarPorGrupoIdOpcion" resultType="int">
         SELECT COUNT(*) FROM msa_catalogo
-         WHERE grupo = #{grupo} AND id_opcion = #{idOpcion} AND fecha_eliminacion IS NULL
+         WHERE grupo = #{grupo} AND id_opcion = #{idOpcion} AND estado = 1
     </select>
 
     <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Catalogo">
         INSERT INTO msa_catalogo (id, grupo, id_opcion, opcion, estado, fecha_creacion, usuario_creacion)
-        VALUES (#{id}, #{grupo}, #{idOpcion}, #{opcion}, #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+        VALUES (#{id}, #{grupo}, #{idOpcion}, #{opcion}, 1, NOW(), #{usuarioCreacion})
     </insert>
 
     <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Catalogo">
@@ -42,10 +42,9 @@
            SET grupo = #{grupo},
                id_opcion = #{idOpcion},
                opcion = #{opcion},
-               estado = #{estado},
-               fecha_modificacion = #{fechaModificacion},
+               fecha_modificacion = NOW(),
                usuario_modificacion = #{usuarioModificacion}
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
     <update id="eliminarLogico">
@@ -54,7 +53,7 @@
                usuario_eliminacion = #{usuarioEliminacion},
                motivo_eliminacion = #{motivoEliminacion},
                estado = 0
-         WHERE id = #{id} AND fecha_eliminacion IS NULL
+         WHERE id = #{id} AND estado = 1
     </update>
 
 </mapper>

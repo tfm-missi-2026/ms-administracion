@@ -79,7 +79,6 @@ public class ModuloService {
         existente.setOrden(request.orden());
         existente.setModuloPadreId(request.moduloPadreId());
         existente.setDescripcion(request.descripcion());
-        existente.setEstado(request.estado());
         moduloMapper.actualizar(existente);
         return moduloConversor.aModuloResponse(existente);
     }

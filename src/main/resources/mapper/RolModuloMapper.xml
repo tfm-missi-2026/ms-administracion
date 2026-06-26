@@ -8,17 +8,17 @@
                fecha_modificacion, usuario_modificacion,
                fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
           FROM msa_rol_modulo
-         WHERE rol_id = #{rolId} AND fecha_eliminacion IS NULL AND estado = 1
+         WHERE rol_id = #{rolId} AND estado = 1
     </select>
 
     <select id="contar" resultType="int">
         SELECT COUNT(*) FROM msa_rol_modulo
-         WHERE rol_id = #{rolId} AND modulo_id = #{moduloId} AND fecha_eliminacion IS NULL
+         WHERE rol_id = #{rolId} AND modulo_id = #{moduloId} AND estado = 1
     </select>
 
     <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.RolModulo">
         INSERT INTO msa_rol_modulo (id, rol_id, modulo_id, estado, fecha_creacion, usuario_creacion)
-        VALUES (#{id}, #{rolId}, #{moduloId}, #{estado}, #{fechaCreacion}, #{usuarioCreacion})
+        VALUES (#{id}, #{rolId}, #{moduloId}, 1, NOW(), #{usuarioCreacion})
     </insert>
 
     <delete id="eliminarFisicoPorRol" parameterType="java.util.UUID">
