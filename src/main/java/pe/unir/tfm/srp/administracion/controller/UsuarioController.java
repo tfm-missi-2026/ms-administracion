@@ -18,6 +18,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
+import pe.unir.tfm.srp.administracion.dto.request.ResetPasswordRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioCrearRequest;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioActualResponse;
@@ -66,6 +67,14 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> eliminar(@PathVariable UUID id, @Valid @RequestBody EliminacionRequest request) {
         usuarioService.eliminar(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/reset-password")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> resetearContrasenia(@PathVariable UUID id,
+                                                    @Valid @RequestBody ResetPasswordRequest request) {
+        usuarioService.resetearContrasenia(id, request.contrasenia());
         return ResponseEntity.noContent().build();
     }
 }

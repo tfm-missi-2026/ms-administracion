@@ -112,4 +112,18 @@ public class UsuarioService {
         }
         usuarioMapper.eliminarLogico(id, currentUserResolver.obtenerUsuarioActualId(), request.motivoEliminacion());
     }
+
+    @Transactional
+    public void resetearContrasenia(UUID id, String contraseniaPlano) {
+        Usuario existente = usuarioMapper.buscarPorId(id);
+        if (existente == null) {
+            throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
+        }
+        String hash = passwordEncoder.encode(contraseniaPlano);
+        int filas = usuarioMapper.actualizarContrasenia(
+            id, hash, currentUserResolver.obtenerUsuarioActualId());
+        if (filas == 0) {
+            throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
+        }
+    }
 }

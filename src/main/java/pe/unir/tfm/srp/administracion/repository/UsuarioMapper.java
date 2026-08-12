@@ -26,4 +26,8 @@ public interface UsuarioMapper {
     void eliminarLogico(@Param("id") UUID id,
                         @Param("usuarioEliminacion") UUID usuarioEliminacion,
                         @Param("motivoEliminacion") String motivoEliminacion);
+
+    int actualizarContrasenia(@Param("id") UUID id,
+                              @Param("contraseniaHash") String contraseniaHash,
+                              @Param("usuarioModificacion") UUID usuarioModificacion);
 }

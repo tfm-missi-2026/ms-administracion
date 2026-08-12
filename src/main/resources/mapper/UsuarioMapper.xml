@@ -87,4 +87,12 @@
          WHERE id = #{id} AND estado = 1
     </update>
 
+    <update id="actualizarContrasenia">
+        UPDATE msa_usuario
+           SET contrasenia = #{contraseniaHash},
+               fecha_modificacion = NOW(),
+               usuario_modificacion = #{usuarioModificacion}
+         WHERE id = #{id} AND estado = 1
+    </update>
+
 </mapper>
