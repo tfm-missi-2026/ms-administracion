@@ -16,10 +16,14 @@ public class Modulo {
     private UUID id;
     private String codigo;
     private String nombre;
-    private String ruta;
     private String icono;
     private Short orden;
     private UUID moduloPadreId;
+    private String seccion;
+    private String tipo;
+    private Boolean sistema;
+    private String seccionTitulo;
+    private Integer seccionOrden;
     private String descripcion;
     private Short estado;
     private LocalDateTime fechaCreacion;

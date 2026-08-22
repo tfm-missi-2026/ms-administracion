@@ -11,7 +11,7 @@ import pe.unir.tfm.srp.administracion.dto.response.UsuarioInfoResponse;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioResponse;
 import pe.unir.tfm.srp.administracion.model.Usuario;
 
-@Mapper(uses = {RolConversor.class})
+@Mapper(componentModel = "spring", uses = {RolConversor.class})
 public interface UsuarioConversor {
 
     @Mapping(target = "nombreCompleto",

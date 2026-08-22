@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
 import pe.unir.tfm.srp.administracion.dto.conversor.ModuloConversor;
 import pe.unir.tfm.srp.administracion.dto.conversor.UsuarioConversor;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
@@ -16,7 +17,6 @@ import pe.unir.tfm.srp.administracion.dto.request.UsuarioCrearRequest;
 import pe.unir.tfm.srp.administracion.dto.response.ModuloResponse;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioActualResponse;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioResponse;
-import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
 import pe.unir.tfm.srp.administracion.exception.ConflictoNegocioException;
 import pe.unir.tfm.srp.administracion.exception.RecursoNoEncontradoException;
 import pe.unir.tfm.srp.administracion.model.Modulo;
@@ -38,34 +38,34 @@ public class UsuarioService {
     private final ModuloConversor moduloConversor;
     private final CurrentUserResolver currentUserResolver;
 
-    public List<UsuarioResponse> listar() {
-        return usuarioConversor.aUsuarioResponseList(usuarioMapper.listarActivos());
+    public List<UsuarioResponse> list() {
+        return usuarioConversor.aUsuarioResponseList(usuarioMapper.listActive());
     }
 
-    public UsuarioResponse buscarPorId(UUID id) {
-        Usuario usuario = usuarioMapper.buscarPorId(id);
+    public UsuarioResponse findById(UUID id) {
+        Usuario usuario = usuarioMapper.findById(id);
         if (usuario == null) {
             throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
         }
         return usuarioConversor.aUsuarioResponse(usuario);
     }
 
-    public UsuarioActualResponse obtenerUsuarioActual(UUID usuarioId) {
-        Usuario usuario = usuarioMapper.buscarPorId(usuarioId);
+    public UsuarioActualResponse getCurrent(UUID usuarioId) {
+        Usuario usuario = usuarioMapper.findById(usuarioId);
         if (usuario == null) {
             throw new RecursoNoEncontradoException("Usuario " + usuarioId + " no encontrado");
         }
-        List<Modulo> modulos = moduloMapper.listarPorRol(usuario.getRolId());
+        List<Modulo> modulos = moduloMapper.listByRole(usuario.getRolId());
         List<ModuloResponse> modulosResponse = moduloConversor.aModuloResponseList(modulos);
         return usuarioConversor.aUsuarioActual(usuario, modulosResponse);
     }
 
     @Transactional
-    public UsuarioResponse crear(UsuarioCrearRequest request) {
-        if (usuarioMapper.contarPorEmail(request.email()) > 0) {
+    public UsuarioResponse create(UsuarioCrearRequest request) {
+        if (usuarioMapper.countByEmail(request.email()) > 0) {
             throw new ConflictoNegocioException("Ya existe un usuario con el email " + request.email());
         }
-        Rol rol = rolMapper.buscarPorId(request.rolId());
+        Rol rol = rolMapper.findById(request.rolId());
         if (rol == null) {
             throw new RecursoNoEncontradoException("Rol " + request.rolId() + " no encontrado");
         }
@@ -79,18 +79,18 @@ public class UsuarioService {
                 .apellidoMaterno(request.apellidoMaterno())
                 .rolId(request.rolId())
                 .build();
-        usuarioMapper.insertar(nuevo);
+        usuarioMapper.insert(nuevo);
         nuevo.setRol(rol);
         return usuarioConversor.aUsuarioResponse(nuevo);
     }
 
     @Transactional
-    public UsuarioResponse actualizar(UUID id, UsuarioActualizarRequest request) {
-        Usuario existente = usuarioMapper.buscarPorId(id);
+    public UsuarioResponse update(UUID id, UsuarioActualizarRequest request) {
+        Usuario existente = usuarioMapper.findById(id);
         if (existente == null) {
             throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
         }
-        Rol rol = rolMapper.buscarPorId(request.rolId());
+        Rol rol = rolMapper.findById(request.rolId());
         if (rol == null) {
             throw new RecursoNoEncontradoException("Rol " + request.rolId() + " no encontrado");
         }
@@ -99,28 +99,28 @@ public class UsuarioService {
         existente.setApellidoPaterno(request.apellidoPaterno());
         existente.setApellidoMaterno(request.apellidoMaterno());
         existente.setRolId(request.rolId());
-        usuarioMapper.actualizar(existente);
+        usuarioMapper.update(existente);
         existente.setRol(rol);
         return usuarioConversor.aUsuarioResponse(existente);
     }
 
     @Transactional
-    public void eliminar(UUID id, EliminacionRequest request) {
-        Usuario existente = usuarioMapper.buscarPorId(id);
+    public void delete(UUID id, EliminacionRequest request) {
+        Usuario existente = usuarioMapper.findById(id);
         if (existente == null) {
             throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
         }
-        usuarioMapper.eliminarLogico(id, currentUserResolver.obtenerUsuarioActualId(), request.motivoEliminacion());
+        usuarioMapper.softDelete(id, currentUserResolver.obtenerUsuarioActualId(), request.motivoEliminacion());
     }
 
     @Transactional
-    public void resetearContrasenia(UUID id, String contraseniaPlano) {
-        Usuario existente = usuarioMapper.buscarPorId(id);
+    public void resetPassword(UUID id, String contraseniaPlano) {
+        Usuario existente = usuarioMapper.findById(id);
         if (existente == null) {
             throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
         }
         String hash = passwordEncoder.encode(contraseniaPlano);
-        int filas = usuarioMapper.actualizarContrasenia(
+        int filas = usuarioMapper.updatePassword(
             id, hash, currentUserResolver.obtenerUsuarioActualId());
         if (filas == 0) {
             throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");

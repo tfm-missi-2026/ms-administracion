@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import pe.unir.tfm.srp.administracion.dto.response.ModuloResponse;
 import pe.unir.tfm.srp.administracion.model.Modulo;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface ModuloConversor {
 
     ModuloResponse aModuloResponse(Modulo modulo);

@@ -17,6 +17,9 @@ public class Rol {
     private String codigo;
     private String nombre;
     private String descripcion;
+    private UUID paginaInicioId;
+    private String paginaInicioCodigo;
+    private Boolean sistema;
     private Short estado;
     private LocalDateTime fechaCreacion;
     private UUID usuarioCreacion;

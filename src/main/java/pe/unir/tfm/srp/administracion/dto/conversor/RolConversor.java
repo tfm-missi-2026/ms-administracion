@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import pe.unir.tfm.srp.administracion.dto.response.RolResponse;
 import pe.unir.tfm.srp.administracion.model.Rol;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface RolConversor {
 
     RolResponse aRolResponse(Rol rol);

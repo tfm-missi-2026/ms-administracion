@@ -30,37 +30,37 @@ public class CatalogoController {
     private final CatalogoService catalogoService;
 
     @GetMapping
-    public ResponseEntity<List<CatalogoResponse>> listar() {
-        return ResponseEntity.ok(catalogoService.listar());
+    public ResponseEntity<List<CatalogoResponse>> list() {
+        return ResponseEntity.ok(catalogoService.list());
     }
 
     @GetMapping("/grupo/{grupo}")
-    public ResponseEntity<List<CatalogoResponse>> listarPorGrupo(@PathVariable String grupo) {
-        return ResponseEntity.ok(catalogoService.listarPorGrupo(grupo));
+    public ResponseEntity<List<CatalogoResponse>> listByGroup(@PathVariable String grupo) {
+        return ResponseEntity.ok(catalogoService.listByGroup(grupo));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CatalogoResponse> buscarPorId(@PathVariable UUID id) {
-        return ResponseEntity.ok(catalogoService.buscarPorId(id));
+    public ResponseEntity<CatalogoResponse> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(catalogoService.findById(id));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CatalogoResponse> crear(@Valid @RequestBody CatalogoCrearRequest request) {
-        return ResponseEntity.ok(catalogoService.crear(request));
+    public ResponseEntity<CatalogoResponse> create(@Valid @RequestBody CatalogoCrearRequest request) {
+        return ResponseEntity.ok(catalogoService.create(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<CatalogoResponse> actualizar(@PathVariable UUID id,
-                                                       @Valid @RequestBody CatalogoActualizarRequest request) {
-        return ResponseEntity.ok(catalogoService.actualizar(id, request));
+    public ResponseEntity<CatalogoResponse> update(@PathVariable UUID id,
+                                                    @Valid @RequestBody CatalogoActualizarRequest request) {
+        return ResponseEntity.ok(catalogoService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> eliminar(@PathVariable UUID id, @Valid @RequestBody EliminacionRequest request) {
-        catalogoService.eliminar(id, request);
+    public ResponseEntity<Void> delete(@PathVariable UUID id, @Valid @RequestBody EliminacionRequest request) {
+        catalogoService.delete(id, request);
         return ResponseEntity.noContent().build();
     }
 }

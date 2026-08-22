@@ -22,7 +22,7 @@ public class AuthService {
     private final UsuarioConversor usuarioConversor;
 
     public LoginResponse autenticar(LoginRequest request) {
-        Usuario usuario = usuarioMapper.buscarPorEmail(request.email());
+        Usuario usuario = usuarioMapper.findByEmail(request.email());
         if (usuario == null) {
             throw new BadCredentialsException("Credenciales invalidas");
         }

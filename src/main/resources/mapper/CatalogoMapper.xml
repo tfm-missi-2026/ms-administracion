@@ -10,34 +10,34 @@
           FROM msa_catalogo
     </sql>
 
-    <select id="buscarPorId" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
+    <select id="findById" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
         <include refid="selectAll"/>
         WHERE id = #{id} AND estado = 1
     </select>
 
-    <select id="listarPorGrupo" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
+    <select id="listByGroup" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
         <include refid="selectAll"/>
         WHERE grupo = #{grupo} AND estado = 1
         ORDER BY id_opcion
     </select>
 
-    <select id="listarActivos" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
+    <select id="listActive" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
         <include refid="selectAll"/>
         WHERE estado = 1
         ORDER BY grupo, id_opcion
     </select>
 
-    <select id="contarPorGrupoIdOpcion" resultType="int">
+    <select id="countByGroupAndOptionId" resultType="int">
         SELECT COUNT(*) FROM msa_catalogo
          WHERE grupo = #{grupo} AND id_opcion = #{idOpcion} AND estado = 1
     </select>
 
-    <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Catalogo">
+    <insert id="insert" parameterType="pe.unir.tfm.srp.administracion.model.Catalogo">
         INSERT INTO msa_catalogo (id, grupo, id_opcion, opcion, estado, fecha_creacion, usuario_creacion)
         VALUES (#{id}, #{grupo}, #{idOpcion}, #{opcion}, 1, NOW(), #{usuarioCreacion})
     </insert>
 
-    <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Catalogo">
+    <update id="update" parameterType="pe.unir.tfm.srp.administracion.model.Catalogo">
         UPDATE msa_catalogo
            SET grupo = #{grupo},
                id_opcion = #{idOpcion},
@@ -47,7 +47,7 @@
          WHERE id = #{id} AND estado = 1
     </update>
 
-    <update id="eliminarLogico">
+    <update id="softDelete">
         UPDATE msa_catalogo
            SET fecha_eliminacion = NOW(),
                usuario_eliminacion = #{usuarioEliminacion},

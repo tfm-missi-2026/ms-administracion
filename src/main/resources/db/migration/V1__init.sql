@@ -130,7 +130,6 @@ CREATE TABLE msa_modulo (
     id                   UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
     codigo               VARCHAR(50)  NOT NULL UNIQUE,
     nombre               VARCHAR(100) NOT NULL,
-    ruta                 VARCHAR(150) NOT NULL,
     icono                VARCHAR(50),
     orden                SMALLINT     NOT NULL,
     modulo_padre_id      UUID         REFERENCES msa_modulo(id),
@@ -152,7 +151,6 @@ COMMENT ON TABLE  msa_modulo IS 'Modulos del sidebar del frontend (con jerarquia
 COMMENT ON COLUMN msa_modulo.id IS 'Identificador unico del modulo';
 COMMENT ON COLUMN msa_modulo.codigo IS 'Codigo unico del modulo (PROYECTOS, TAREAS, ASIGNACIONES, VARIACIONES, USUARIOS, etc.)';
 COMMENT ON COLUMN msa_modulo.nombre IS 'Nombre visible en el sidebar';
-COMMENT ON COLUMN msa_modulo.ruta IS 'Ruta del frontend (ej. /proyectos)';
 COMMENT ON COLUMN msa_modulo.icono IS 'Nombre del icono del sidebar (ej. heroicon name)';
 COMMENT ON COLUMN msa_modulo.orden IS 'Orden de aparicion en el sidebar';
 COMMENT ON COLUMN msa_modulo.modulo_padre_id IS 'FK al modulo padre (NULL si es de primer nivel; permite submenus)';

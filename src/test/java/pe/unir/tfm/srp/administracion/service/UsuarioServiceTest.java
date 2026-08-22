@@ -71,90 +71,90 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void crear_emailDuplicado_lanzaConflictoYNoInserta() {
-        when(usuarioMapper.contarPorEmail("nuevo@srp.local")).thenReturn(1);
+    void create_emailDuplicado_lanzaConflictoYNoInserta() {
+        when(usuarioMapper.countByEmail("nuevo@srp.local")).thenReturn(1);
 
-        assertThatThrownBy(() -> usuarioService.crear(crearRequest()))
+        assertThatThrownBy(() -> usuarioService.create(crearRequest()))
                 .isInstanceOf(ConflictoNegocioException.class)
                 .hasMessageContaining("Ya existe un usuario");
 
-        verify(usuarioMapper, never()).insertar(any());
+        verify(usuarioMapper, never()).insert(any());
     }
 
     @Test
-    void crear_rolNoExiste_lanzaRecursoNoEncontrado() {
-        when(usuarioMapper.contarPorEmail("nuevo@srp.local")).thenReturn(0);
-        when(rolMapper.buscarPorId(ROL_ID)).thenReturn(null);
+    void create_rolNoExiste_lanzaRecursoNoEncontrado() {
+        when(usuarioMapper.countByEmail("nuevo@srp.local")).thenReturn(0);
+        when(rolMapper.findById(ROL_ID)).thenReturn(null);
 
-        assertThatThrownBy(() -> usuarioService.crear(crearRequest()))
+        assertThatThrownBy(() -> usuarioService.create(crearRequest()))
                 .isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void crear_datosValidos_hasheaContraseniaEInserta() {
-        when(usuarioMapper.contarPorEmail("nuevo@srp.local")).thenReturn(0);
-        when(rolMapper.buscarPorId(ROL_ID)).thenReturn(rolAdmin());
+    void create_datosValidos_hasheaContraseniaEInserta() {
+        when(usuarioMapper.countByEmail("nuevo@srp.local")).thenReturn(0);
+        when(rolMapper.findById(ROL_ID)).thenReturn(rolAdmin());
         when(passwordEncoder.encode("Clave123")).thenReturn("$2a$10$hash");
         UsuarioResponse esperado = new UsuarioResponse(
                 UUID.randomUUID(), "nuevo@srp.local", "Nuevo", "Apellido", "Materno",
                 null, (short) 1);
         when(usuarioConversor.aUsuarioResponse(any(Usuario.class))).thenReturn(esperado);
 
-        UsuarioResponse resultado = usuarioService.crear(crearRequest());
+        UsuarioResponse resultado = usuarioService.create(crearRequest());
 
         assertThat(resultado.email()).isEqualTo("nuevo@srp.local");
         verify(passwordEncoder).encode("Clave123");
-        verify(usuarioMapper).insertar(any(Usuario.class));
+        verify(usuarioMapper).insert(any(Usuario.class));
     }
 
     @Test
-    void buscarPorId_noExiste_lanzaRecursoNoEncontrado() {
-        when(usuarioMapper.buscarPorId(ID)).thenReturn(null);
+    void findById_noExiste_lanzaRecursoNoEncontrado() {
+        when(usuarioMapper.findById(ID)).thenReturn(null);
 
-        assertThatThrownBy(() -> usuarioService.buscarPorId(ID))
+        assertThatThrownBy(() -> usuarioService.findById(ID))
                 .isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void eliminar_usuarioNoExiste_lanzaRecursoNoEncontrado() {
-        when(usuarioMapper.buscarPorId(ID)).thenReturn(null);
+    void delete_usuarioNoExiste_lanzaRecursoNoEncontrado() {
+        when(usuarioMapper.findById(ID)).thenReturn(null);
 
-        assertThatThrownBy(() -> usuarioService.eliminar(
+        assertThatThrownBy(() -> usuarioService.delete(
                 ID, new EliminacionRequest("Baja")))
                 .isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void eliminar_usuarioExiste_usaUsuarioActualYEliminaLogico() {
-        when(usuarioMapper.buscarPorId(ID)).thenReturn(usuarioActivo());
+    void delete_usuarioExiste_usaUsuarioActualYEliminaLogico() {
+        when(usuarioMapper.findById(ID)).thenReturn(usuarioActivo());
         UUID currentUser = UUID.fromString("00000000-0000-0000-0000-000000000099");
         when(currentUserResolver.obtenerUsuarioActualId()).thenReturn(currentUser);
 
-        usuarioService.eliminar(ID, new EliminacionRequest("Renuncia"));
+        usuarioService.delete(ID, new EliminacionRequest("Renuncia"));
 
-        verify(usuarioMapper).eliminarLogico(eq(ID), eq(currentUser), eq("Renuncia"));
+        verify(usuarioMapper).softDelete(eq(ID), eq(currentUser), eq("Renuncia"));
     }
 
     @Test
-    void actualizar_usuarioNoExiste_lanzaRecursoNoEncontrado() {
-        when(usuarioMapper.buscarPorId(ID)).thenReturn(null);
+    void update_usuarioNoExiste_lanzaRecursoNoEncontrado() {
+        when(usuarioMapper.findById(ID)).thenReturn(null);
 
         UsuarioActualizarRequest req = new UsuarioActualizarRequest(
                 "nuevo@srp.local", "Nuevo", "Apellido", "Materno", ROL_ID);
 
-        assertThatThrownBy(() -> usuarioService.actualizar(ID, req))
+        assertThatThrownBy(() -> usuarioService.update(ID, req))
                 .isInstanceOf(RecursoNoEncontradoException.class);
     }
 
     @Test
-    void listar_delegaMappersYConversor() {
+    void list_delegaMappersYConversor() {
         Usuario u = usuarioActivo();
-        when(usuarioMapper.listarActivos()).thenReturn(List.of(u));
+        when(usuarioMapper.listActive()).thenReturn(List.of(u));
         when(usuarioConversor.aUsuarioResponseList(List.of(u))).thenReturn(List.of());
 
-        usuarioService.listar();
+        usuarioService.list();
 
-        verify(usuarioMapper).listarActivos();
+        verify(usuarioMapper).listActive();
         verify(usuarioConversor).aUsuarioResponseList(List.of(u));
     }
 }

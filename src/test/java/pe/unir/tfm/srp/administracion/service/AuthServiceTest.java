@@ -61,7 +61,7 @@ class AuthServiceTest {
 
     @Test
     void autenticar_emailNoExiste_lanzaBadCredentials() {
-        when(usuarioMapper.buscarPorEmail(EMAIL)).thenReturn(null);
+        when(usuarioMapper.findByEmail(EMAIL)).thenReturn(null);
 
         assertThatThrownBy(() -> authService.autenticar(request()))
                 .isInstanceOf(BadCredentialsException.class);
@@ -74,7 +74,7 @@ class AuthServiceTest {
     void autenticar_usuarioDeshabilitado_lanzaDisabled() {
         Usuario deshabilitado = usuarioActivo();
         deshabilitado.setEstado((short) 0);
-        when(usuarioMapper.buscarPorEmail(EMAIL)).thenReturn(deshabilitado);
+        when(usuarioMapper.findByEmail(EMAIL)).thenReturn(deshabilitado);
 
         assertThatThrownBy(() -> authService.autenticar(request()))
                 .isInstanceOf(DisabledException.class);
@@ -82,7 +82,7 @@ class AuthServiceTest {
 
     @Test
     void autenticar_contraseniaIncorrecta_lanzaBadCredentials() {
-        when(usuarioMapper.buscarPorEmail(EMAIL)).thenReturn(usuarioActivo());
+        when(usuarioMapper.findByEmail(EMAIL)).thenReturn(usuarioActivo());
         when(passwordEncoder.matches(PASSWORD, HASH)).thenReturn(false);
 
         assertThatThrownBy(() -> authService.autenticar(request()))
@@ -94,7 +94,7 @@ class AuthServiceTest {
     @Test
     void autenticar_credencialesValidas_devuelveLoginResponse() {
         Usuario usuario = usuarioActivo();
-        when(usuarioMapper.buscarPorEmail(EMAIL)).thenReturn(usuario);
+        when(usuarioMapper.findByEmail(EMAIL)).thenReturn(usuario);
         when(passwordEncoder.matches(PASSWORD, HASH)).thenReturn(true);
         when(jwtService.generarToken(usuario))
                 .thenReturn(new JwtService.TokenGenerado("jwt.token", 3600L));

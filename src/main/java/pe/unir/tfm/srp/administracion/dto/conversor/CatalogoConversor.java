@@ -7,7 +7,7 @@ import org.mapstruct.Mapper;
 import pe.unir.tfm.srp.administracion.dto.response.CatalogoResponse;
 import pe.unir.tfm.srp.administracion.model.Catalogo;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface CatalogoConversor {
 
     CatalogoResponse aCatalogoResponse(Catalogo catalogo);

@@ -7,5 +7,8 @@ public record RolResponse(
     String codigo,
     String nombre,
     String descripcion,
+    UUID paginaInicioId,
+    String paginaInicioCodigo,
+    Boolean sistema,
     Short estado
 ) {}

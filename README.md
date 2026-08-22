@@ -9,13 +9,13 @@ El stack completo se orquesta desde el repo
 
 ## Datos del servicio
 
-| | |
-|---|---|
-| Puerto | **8081** |
-| Base de datos | `spsrt_administracion` (PostgreSQL 16) |
-| Prefijo de tablas | `msa_` |
-| Paquete base | `pe.unir.tfm.srp.administracion` |
-| Stack | Java 21 · Spring Boot 3.5.14 · MyBatis · Flyway · Eureka client |
+|                   |                                                                 |
+| ----------------- | --------------------------------------------------------------- |
+| Puerto            | **8081**                                                        |
+| Base de datos     | `spsrt_administracion` (PostgreSQL 16)                          |
+| Prefijo de tablas | `msa_`                                                          |
+| Paquete base      | `pe.unir.tfm.srp.administracion`                                |
+| Stack             | Java 25 · Spring Boot 3.5.14 · MyBatis · Flyway · Eureka client |
 
 ## URLs útiles (con el stack completo levantado)
 
@@ -26,7 +26,7 @@ El stack completo se orquesta desde el repo
 ## Requisitos
 
 - **Docker Desktop 24+** con docker compose v2 (forma recomendada), **o**
-- Java 21 + Maven 3.9+ para compilar/ejecutar fuera de contenedor.
+- Java 25 + Maven 3.9+ para compilar/ejecutar fuera de contenedor.
 
 ## Levantar standalone (solo este servicio + su PostgreSQL)
 
@@ -39,10 +39,10 @@ Arranca el microservicio + un PostgreSQL propio (sin Eureka). La BD y el usuario
 solos; Flyway aplica `V1__init.sql` (esquema) y `V2__seed.sql` (usuarios, roles y módulos
 iniciales), así que el **login funciona sin pasos extra**.
 
-- API:     http://localhost:8081
-- Health:  http://localhost:8081/actuator/health
+- API: http://localhost:8081
+- Health: http://localhost:8081/actuator/health
 - Swagger: http://localhost:8081/swagger-ui.html
-- Login:   `POST /api/auth/login` (usar un usuario del seed `V2__seed.sql`)
+- Login: `POST /api/auth/login` (usar un usuario del seed `V2__seed.sql`)
 
 > Es el **emisor del JWT** que validan el gateway y los demás microservicios; todos deben
 > compartir el mismo `JWT_SECRET`.
@@ -60,7 +60,7 @@ El perfil **`dev`** desactiva la exigencia de JWT e inyecta un usuario simulado 
 seed, con todos los roles), así probás los endpoints protegidos **sin token**. Activalo de una
 de estas formas:
 
-- **Run Configuration** → campo *Active profiles*: `dev`, **o**
+- **Run Configuration** → campo _Active profiles_: `dev`, **o**
 - VM options: `-Dspring.profiles.active=dev`, **o**
 - Variable de entorno: `SPRING_PROFILES_ACTIVE=dev`
 
@@ -78,13 +78,13 @@ Para correrlo junto a Eureka, el gateway y los demás microservicios, usa el rep
 
 ## Endpoints principales
 
-| Recurso | Ruta |
-|---|---|
-| Auth (login) | `/api/auth` |
-| Usuarios | `/api/usuarios` |
-| Roles | `/api/roles` |
-| Módulos | `/api/modulos` |
-| Catálogo | `/api/catalogo` |
+| Recurso      | Ruta            |
+| ------------ | --------------- |
+| Auth (login) | `/api/auth`     |
+| Usuarios     | `/api/usuarios` |
+| Roles        | `/api/roles`    |
+| Módulos      | `/api/modulos`  |
+| Catálogo     | `/api/catalogo` |
 
 ## Migraciones
 

@@ -3,69 +3,128 @@
 <mapper namespace="pe.unir.tfm.srp.administracion.repository.ModuloMapper">
 
     <sql id="selectAll">
-        SELECT id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion,
-               estado, fecha_creacion, usuario_creacion,
-               fecha_modificacion, usuario_modificacion,
-               fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
-          FROM msa_modulo
+        SELECT m.id, m.codigo, m.nombre, m.icono, m.orden, m.modulo_padre_id,
+               m.seccion, m.tipo, m.sistema, m.descripcion,
+               s.nombre AS seccion_titulo,
+               s.orden  AS seccion_orden,
+               m.estado, m.fecha_creacion, m.usuario_creacion,
+               m.fecha_modificacion, m.usuario_modificacion,
+               m.fecha_eliminacion, m.usuario_eliminacion, m.motivo_eliminacion
+          FROM msa_modulo m
+          LEFT JOIN msa_modulo s ON s.codigo = m.seccion AND s.tipo = 'SECTION' AND s.estado = 1</sql>
+
+    <!-- Filtros compartidos entre `countPaged` y `listPage`. -->
+    <sql id="filtrosModulo">
+        <if test="search != null and search != ''">
+            AND (m.codigo ILIKE '%' || #{search} || '%'
+              OR m.nombre ILIKE '%' || #{search} || '%')
+        </if>
+        <if test="seccion != null and seccion != ''">
+            AND m.seccion = #{seccion}
+        </if>
+        <if test="estado != null">
+            AND m.estado = #{estado}
+        </if>
     </sql>
 
-    <select id="buscarPorId" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+    <select id="findById" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
-        WHERE id = #{id} AND estado = 1
+        WHERE m.id = #{id} AND m.estado = 1
     </select>
 
-    <select id="buscarPorCodigo" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+    <select id="findByIdWithState" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
-        WHERE codigo = #{codigo} AND estado = 1
+        WHERE m.id = #{id}
     </select>
 
-    <select id="listarActivos" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+    <select id="findByCode" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
-        WHERE estado = 1
-        ORDER BY modulo_padre_id NULLS FIRST, orden
+        WHERE m.codigo = #{codigo} AND m.estado = 1
     </select>
 
-    <select id="listarPorRol" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
-        SELECT m.id, m.codigo, m.nombre, m.ruta, m.icono, m.orden, m.modulo_padre_id, m.descripcion,
+    <select id="findSectionByCode" parameterType="string" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        WHERE m.codigo = #{codigo} AND m.tipo = 'SECTION' AND m.estado = 1
+    </select>
+
+    <select id="listActive" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        WHERE m.estado = 1
+        ORDER BY s.orden NULLS LAST, m.modulo_padre_id NULLS FIRST, m.orden
+    </select>
+
+    <select id="listAll" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        ORDER BY s.orden NULLS LAST, m.modulo_padre_id NULLS FIRST, m.orden
+    </select>
+
+    <select id="listByRole" parameterType="java.util.UUID" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        SELECT m.id, m.codigo, m.nombre, m.icono, m.orden, m.modulo_padre_id,
+               m.seccion, m.tipo, m.sistema, m.descripcion,
+               s.nombre AS seccion_titulo,
+               s.orden  AS seccion_orden,
                m.estado, m.fecha_creacion, m.usuario_creacion,
                m.fecha_modificacion, m.usuario_modificacion,
                m.fecha_eliminacion, m.usuario_eliminacion, m.motivo_eliminacion
           FROM msa_modulo m
           JOIN msa_rol_modulo rm ON rm.modulo_id = m.id
+          LEFT JOIN msa_modulo s ON s.codigo = m.seccion AND s.tipo = 'SECTION' AND s.estado = 1
          WHERE rm.rol_id = #{rolId}
            AND m.estado = 1
            AND rm.estado = 1
-         ORDER BY m.modulo_padre_id NULLS FIRST, m.orden
+         ORDER BY s.orden NULLS LAST, m.modulo_padre_id NULLS FIRST, m.orden
     </select>
 
-    <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
-        INSERT INTO msa_modulo (id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion,
+    <select id="countPaged" resultType="long">
+        SELECT COUNT(*) FROM msa_modulo m
+        LEFT JOIN msa_modulo s ON s.codigo = m.seccion AND s.tipo = 'SECTION' AND s.estado = 1
+        <where><include refid="filtrosModulo"/></where>
+    </select>
+
+    <select id="listPage" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        <include refid="selectAll"/>
+        <where><include refid="filtrosModulo"/></where>
+        ORDER BY
+        <choose>
+            <when test="sortClause != null">${sortClause}</when>
+            <otherwise>s.orden NULLS LAST, m.modulo_padre_id NULLS FIRST, m.orden</otherwise>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
+    <insert id="insert" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
+        INSERT INTO msa_modulo (id, codigo, nombre, icono, orden, modulo_padre_id,
+                                seccion, tipo, sistema, descripcion,
                                 estado, fecha_creacion, usuario_creacion)
-        VALUES (#{id}, #{codigo}, #{nombre}, #{ruta}, #{icono}, #{orden}, #{moduloPadreId}, #{descripcion},
+        VALUES (#{id}, #{codigo}, #{nombre}, #{icono}, #{orden}, #{moduloPadreId},
+                #{seccion}, #{tipo}, CASE WHEN #{sistema} THEN 1 ELSE 0 END, #{descripcion},
                 1, NOW(), #{usuarioCreacion})
     </insert>
 
-    <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
+    <update id="update" parameterType="pe.unir.tfm.srp.administracion.model.Modulo">
         UPDATE msa_modulo
            SET nombre = #{nombre},
-               ruta = #{ruta},
                icono = #{icono},
                orden = #{orden},
                modulo_padre_id = #{moduloPadreId},
+               seccion = #{seccion},
+               tipo = #{tipo},
+               sistema = CASE WHEN #{sistema} THEN 1 ELSE 0 END,
                descripcion = #{descripcion},
                fecha_modificacion = NOW(),
                usuario_modificacion = #{usuarioModificacion}
          WHERE id = #{id} AND estado = 1
     </update>
 
-    <update id="eliminarLogico">
+    <update id="changeState">
         UPDATE msa_modulo
-           SET fecha_eliminacion = NOW(),
-               usuario_eliminacion = #{usuarioEliminacion},
-               motivo_eliminacion = #{motivoEliminacion},
-               estado = 0
-         WHERE id = #{id} AND estado = 1
+           SET estado = #{estado},
+               fecha_eliminacion = CASE WHEN #{estado} = 0 THEN NOW() ELSE NULL END,
+               usuario_eliminacion = CASE WHEN #{estado} = 0 THEN #{usuarioModificacion} ELSE NULL END,
+               motivo_eliminacion = CASE WHEN #{estado} = 0 THEN #{motivoEliminacion} ELSE NULL END,
+               fecha_modificacion = NOW(),
+               usuario_modificacion = #{usuarioModificacion}
+         WHERE id = #{id}
     </update>
 
 </mapper>

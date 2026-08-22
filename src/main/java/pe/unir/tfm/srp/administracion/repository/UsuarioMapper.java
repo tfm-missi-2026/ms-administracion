@@ -11,23 +11,23 @@ import pe.unir.tfm.srp.administracion.model.Usuario;
 @Mapper
 public interface UsuarioMapper {
 
-    Usuario buscarPorId(@Param("id") UUID id);
+    Usuario findById(@Param("id") UUID id);
 
-    Usuario buscarPorEmail(@Param("email") String email);
+    Usuario findByEmail(@Param("email") String email);
 
-    List<Usuario> listarActivos();
+    List<Usuario> listActive();
 
-    int contarPorEmail(@Param("email") String email);
+    int countByEmail(@Param("email") String email);
 
-    void insertar(Usuario usuario);
+    void insert(Usuario usuario);
 
-    void actualizar(Usuario usuario);
+    void update(Usuario usuario);
 
-    void eliminarLogico(@Param("id") UUID id,
-                        @Param("usuarioEliminacion") UUID usuarioEliminacion,
-                        @Param("motivoEliminacion") String motivoEliminacion);
+    void softDelete(@Param("id") UUID id,
+                     @Param("usuarioEliminacion") UUID usuarioEliminacion,
+                     @Param("motivoEliminacion") String motivoEliminacion);
 
-    int actualizarContrasenia(@Param("id") UUID id,
-                              @Param("contraseniaHash") String contraseniaHash,
-                              @Param("usuarioModificacion") UUID usuarioModificacion);
+    int updatePassword(@Param("id") UUID id,
+                        @Param("contraseniaHash") String contraseniaHash,
+                        @Param("usuarioModificacion") UUID usuarioModificacion);
 }

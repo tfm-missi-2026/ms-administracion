@@ -11,11 +11,11 @@ import pe.unir.tfm.srp.administracion.model.RolModulo;
 @Mapper
 public interface RolModuloMapper {
 
-    List<RolModulo> listarPorRol(@Param("rolId") UUID rolId);
+    List<RolModulo> listByRole(@Param("rolId") UUID rolId);
 
-    int contar(@Param("rolId") UUID rolId, @Param("moduloId") UUID moduloId);
+    int count(@Param("rolId") UUID rolId, @Param("moduloId") UUID moduloId);
 
-    void insertar(RolModulo rolModulo);
+    void insert(RolModulo rolModulo);
 
-    void eliminarFisicoPorRol(@Param("rolId") UUID rolId);
+    void deleteByRole(@Param("rolId") UUID rolId);
 }

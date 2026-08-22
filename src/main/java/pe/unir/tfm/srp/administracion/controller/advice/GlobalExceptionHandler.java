@@ -46,43 +46,43 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail manejarCredencialesInvalidas(BadCredentialsException ex, HttpServletRequest req) {
-        return crearProblema(HttpStatus.UNAUTHORIZED, "CREDENCIALES_INVALIDAS", ex.getMessage(), req);
+        return buildProblem(HttpStatus.UNAUTHORIZED, "CREDENCIALES_INVALIDAS", ex.getMessage(), req);
     }
 
     @ExceptionHandler(DisabledException.class)
     public ProblemDetail manejarUsuarioDeshabilitado(DisabledException ex, HttpServletRequest req) {
-        return crearProblema(HttpStatus.FORBIDDEN, "USUARIO_DESHABILITADO", ex.getMessage(), req);
+        return buildProblem(HttpStatus.FORBIDDEN, "USUARIO_DESHABILITADO", ex.getMessage(), req);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail manejarAccesoDenegado(AccessDeniedException ex, HttpServletRequest req) {
-        return crearProblema(HttpStatus.FORBIDDEN, "ACCESO_DENEGADO", "Acceso denegado", req);
+        return buildProblem(HttpStatus.FORBIDDEN, "ACCESO_DENEGADO", "Acceso denegado", req);
     }
 
     @ExceptionHandler(RecursoNoEncontradoException.class)
     public ProblemDetail manejarNoEncontrado(RecursoNoEncontradoException ex, HttpServletRequest req) {
-        return crearProblema(HttpStatus.NOT_FOUND, "RECURSO_NO_ENCONTRADO", ex.getMessage(), req);
+        return buildProblem(HttpStatus.NOT_FOUND, "RECURSO_NO_ENCONTRADO", ex.getMessage(), req);
     }
 
     @ExceptionHandler(ConflictoNegocioException.class)
     public ProblemDetail manejarConflicto(ConflictoNegocioException ex, HttpServletRequest req) {
-        return crearProblema(HttpStatus.CONFLICT, "CONFLICTO_NEGOCIO", ex.getMessage(), req);
+        return buildProblem(HttpStatus.CONFLICT, "CONFLICTO_NEGOCIO", ex.getMessage(), req);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ProblemDetail manejarIntegridad(DataIntegrityViolationException ex, HttpServletRequest req) {
         log.warn("Violacion de integridad en {}: {}", req.getRequestURI(), ex.getMostSpecificCause().getMessage());
-        return crearProblema(HttpStatus.CONFLICT, "CONFLICTO_INTEGRIDAD",
+        return buildProblem(HttpStatus.CONFLICT, "CONFLICTO_INTEGRIDAD",
                 "Ya existe un registro con esos datos unicos o se viola una restriccion de integridad", req);
     }
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail manejarErrorGenerico(Exception ex, HttpServletRequest req) {
         log.error("Error no controlado en {}", req.getRequestURI(), ex);
-        return crearProblema(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR_INTERNO", "Error interno del servidor", req);
+        return buildProblem(HttpStatus.INTERNAL_SERVER_ERROR, "ERROR_INTERNO", "Error interno del servidor", req);
     }
 
-    private ProblemDetail crearProblema(HttpStatus status, String codigo, String detalle, HttpServletRequest req) {
+    private ProblemDetail buildProblem(HttpStatus status, String codigo, String detalle, HttpServletRequest req) {
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detalle);
         problem.setTitle(codigo);
         problem.setInstance(URI.create(req.getRequestURI()));

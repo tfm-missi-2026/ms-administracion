@@ -34,47 +34,47 @@ public class UsuarioController {
     private final CurrentUserResolver currentUserResolver;
 
     @GetMapping("/me")
-    public ResponseEntity<UsuarioActualResponse> obtenerActual() {
-        return ResponseEntity.ok(usuarioService.obtenerUsuarioActual(currentUserResolver.obtenerUsuarioActualId()));
+    public ResponseEntity<UsuarioActualResponse> getCurrent() {
+        return ResponseEntity.ok(usuarioService.getCurrent(currentUserResolver.obtenerUsuarioActualId()));
     }
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UsuarioResponse>> listar() {
-        return ResponseEntity.ok(usuarioService.listar());
+    public ResponseEntity<List<UsuarioResponse>> list() {
+        return ResponseEntity.ok(usuarioService.list());
     }
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsuarioResponse> buscarPorId(@PathVariable UUID id) {
-        return ResponseEntity.ok(usuarioService.buscarPorId(id));
+    public ResponseEntity<UsuarioResponse> findById(@PathVariable UUID id) {
+        return ResponseEntity.ok(usuarioService.findById(id));
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsuarioResponse> crear(@Valid @RequestBody UsuarioCrearRequest request) {
-        return ResponseEntity.ok(usuarioService.crear(request));
+    public ResponseEntity<UsuarioResponse> create(@Valid @RequestBody UsuarioCrearRequest request) {
+        return ResponseEntity.ok(usuarioService.create(request));
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UsuarioResponse> actualizar(@PathVariable UUID id,
-                                                      @Valid @RequestBody UsuarioActualizarRequest request) {
-        return ResponseEntity.ok(usuarioService.actualizar(id, request));
+    public ResponseEntity<UsuarioResponse> update(@PathVariable UUID id,
+                                                 @Valid @RequestBody UsuarioActualizarRequest request) {
+        return ResponseEntity.ok(usuarioService.update(id, request));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> eliminar(@PathVariable UUID id, @Valid @RequestBody EliminacionRequest request) {
-        usuarioService.eliminar(id, request);
+    public ResponseEntity<Void> delete(@PathVariable UUID id, @Valid @RequestBody EliminacionRequest request) {
+        usuarioService.delete(id, request);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/reset-password")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> resetearContrasenia(@PathVariable UUID id,
-                                                    @Valid @RequestBody ResetPasswordRequest request) {
-        usuarioService.resetearContrasenia(id, request.contrasenia());
+    public ResponseEntity<Void> resetPassword(@PathVariable UUID id,
+                                              @Valid @RequestBody ResetPasswordRequest request) {
+        usuarioService.resetPassword(id, request.contrasenia());
         return ResponseEntity.noContent().build();
     }
 }

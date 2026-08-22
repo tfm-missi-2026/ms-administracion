@@ -19,10 +19,12 @@
         <result property="usuarioEliminacion"   column="usuario_eliminacion"/>
         <result property="motivoEliminacion"    column="motivo_eliminacion"/>
         <association property="rol" javaType="pe.unir.tfm.srp.administracion.model.Rol">
-            <id     property="id"           column="rol_uuid"/>
-            <result property="codigo"       column="rol_codigo"/>
-            <result property="nombre"       column="rol_nombre"/>
-            <result property="descripcion"  column="rol_descripcion"/>
+            <id     property="id"                  column="rol_uuid"/>
+            <result property="codigo"              column="rol_codigo"/>
+            <result property="nombre"              column="rol_nombre"/>
+            <result property="descripcion"         column="rol_descripcion"/>
+            <result property="paginaInicioId"      column="rol_pagina_inicio_id"/>
+            <result property="paginaInicioCodigo"  column="rol_pagina_inicio_codigo"/>
         </association>
     </resultMap>
 
@@ -31,42 +33,45 @@
                u.rol_id, u.estado, u.fecha_creacion, u.usuario_creacion,
                u.fecha_modificacion, u.usuario_modificacion,
                u.fecha_eliminacion, u.usuario_eliminacion, u.motivo_eliminacion,
-               r.id          AS rol_uuid,
-               r.codigo      AS rol_codigo,
-               r.nombre      AS rol_nombre,
-               r.descripcion AS rol_descripcion
+               r.id                 AS rol_uuid,
+               r.codigo             AS rol_codigo,
+               r.nombre             AS rol_nombre,
+               r.descripcion        AS rol_descripcion,
+               r.pagina_inicio_id   AS rol_pagina_inicio_id,
+               mland.codigo         AS rol_pagina_inicio_codigo
           FROM msa_usuario u
           JOIN msa_rol r ON r.id = u.rol_id
+          LEFT JOIN msa_modulo mland ON mland.id = r.pagina_inicio_id
     </sql>
 
-    <select id="buscarPorId" parameterType="java.util.UUID" resultMap="usuarioConRol">
+    <select id="findById" parameterType="java.util.UUID" resultMap="usuarioConRol">
         <include refid="selectUsuarioRol"/>
         WHERE u.id = #{id} AND u.estado = 1
     </select>
 
-    <select id="buscarPorEmail" parameterType="string" resultMap="usuarioConRol">
+    <select id="findByEmail" parameterType="string" resultMap="usuarioConRol">
         <include refid="selectUsuarioRol"/>
         WHERE u.email = #{email} AND u.estado = 1
     </select>
 
-    <select id="listarActivos" resultMap="usuarioConRol">
+    <select id="listActive" resultMap="usuarioConRol">
         <include refid="selectUsuarioRol"/>
         WHERE u.estado = 1
         ORDER BY u.apellido_paterno, u.apellido_materno, u.nombres
     </select>
 
-    <select id="contarPorEmail" parameterType="string" resultType="int">
+    <select id="countByEmail" parameterType="string" resultType="int">
         SELECT COUNT(*) FROM msa_usuario WHERE email = #{email} AND estado = 1
     </select>
 
-    <insert id="insertar" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
+    <insert id="insert" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
         INSERT INTO msa_usuario (id, email, contrasenia, nombres, apellido_paterno, apellido_materno,
                                  rol_id, estado, fecha_creacion, usuario_creacion)
         VALUES (#{id}, #{email}, #{contrasenia}, #{nombres}, #{apellidoPaterno}, #{apellidoMaterno},
                 #{rolId}, 1, NOW(), #{usuarioCreacion})
     </insert>
 
-    <update id="actualizar" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
+    <update id="update" parameterType="pe.unir.tfm.srp.administracion.model.Usuario">
         UPDATE msa_usuario
            SET email = #{email},
                nombres = #{nombres},
@@ -78,7 +83,7 @@
          WHERE id = #{id} AND estado = 1
     </update>
 
-    <update id="eliminarLogico">
+    <update id="softDelete">
         UPDATE msa_usuario
            SET fecha_eliminacion = NOW(),
                usuario_eliminacion = #{usuarioEliminacion},
@@ -87,7 +92,7 @@
          WHERE id = #{id} AND estado = 1
     </update>
 
-    <update id="actualizarContrasenia">
+    <update id="updatePassword">
         UPDATE msa_usuario
            SET contrasenia = #{contraseniaHash},
                fecha_modificacion = NOW(),

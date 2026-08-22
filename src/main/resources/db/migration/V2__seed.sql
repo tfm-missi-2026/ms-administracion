@@ -37,27 +37,27 @@ INSERT INTO msa_rol (id, codigo, nombre, descripcion, fecha_creacion, usuario_cr
 -- Modulos del sidebar (set base completo, con jerarquia para submenus)
 -- ---------------------------------------------------------------------
 -- Modulos de primer nivel
-INSERT INTO msa_modulo (id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion, fecha_creacion, usuario_creacion) VALUES
-('00000000-0000-0000-0000-000000000101', 'INICIO',          'Inicio',           '/',              'home',     1, NULL, 'Dashboard principal con indicadores generales',                                            NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000102', 'PROYECTOS',       'Proyectos',        '/proyectos',     'folder',   2, NULL, 'Gestion de sistemas, subproyectos y tareas',                                              NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000103', 'BITACORA',        'Mi Bitacora',      '/bitacora',      'journal',  3, NULL, 'Registro diario de tiempo del recurso (trabajo en tareas + actividades transversales)',  NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000104', 'ASIGNACIONES',    'Asignaciones',     '/asignaciones',  'users',    4, NULL, 'Asignacion de recursos tecnicos a tareas',                                                NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000105', 'VARIACIONES',     'Variaciones',      '/variaciones',   'edit',     5, NULL, 'Registro y resolucion de variaciones (alcance, plazo, recursos)',                         NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000106', 'LINEA_BASE',      'Linea Base',       '/linea-base',    'archive',  6, NULL, 'Snapshots congelados del plan y comparativa contra estado vigente',                       NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000107', 'ADMINISTRACION',  'Administracion',   '/admin',         'settings', 7, NULL, 'Gestion de usuarios, roles, catalogo y modulos del sistema',                              NOW(), '00000000-0000-0000-0000-000000000000');
+INSERT INTO msa_modulo (id, codigo, nombre, icono, orden, modulo_padre_id, descripcion, fecha_creacion, usuario_creacion) VALUES
+('00000000-0000-0000-0000-000000000101', 'INICIO',          'Inicio',           'home',     1, NULL, 'Dashboard principal con indicadores generales',                                            NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000102', 'PROYECTOS',       'Proyectos',        'folder',   2, NULL, 'Gestion de sistemas, subproyectos y tareas',                                              NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000103', 'BITACORA',        'Mi Bitacora',      'journal',  3, NULL, 'Registro diario de tiempo del recurso (trabajo en tareas + actividades transversales)',  NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000104', 'ASIGNACIONES',    'Asignaciones',     'users',    4, NULL, 'Asignacion de recursos tecnicos a tareas',                                                NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000105', 'VARIACIONES',     'Variaciones',      'edit',     5, NULL, 'Registro y resolucion de variaciones (alcance, plazo, recursos)',                         NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000106', 'LINEA_BASE',      'Linea Base',       'archive',  6, NULL, 'Snapshots congelados del plan y comparativa contra estado vigente',                       NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000107', 'ADMINISTRACION',  'Administracion',   'settings', 7, NULL, 'Gestion de usuarios, roles, catalogo y modulos del sistema',                              NOW(), '00000000-0000-0000-0000-000000000000');
 
 -- Submenus de Proyectos (modulo_padre_id = 102)
-INSERT INTO msa_modulo (id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion, fecha_creacion, usuario_creacion) VALUES
-('00000000-0000-0000-0000-000000000111', 'SISTEMAS',        'Sistemas',         '/proyectos/sistemas',      'server',   1, '00000000-0000-0000-0000-000000000102', 'Catalogo de sistemas existentes y nuevos por desarrollar',                  NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000112', 'SUBPROYECTOS',    'Subproyectos',     '/proyectos/subproyectos',  'layers',   2, '00000000-0000-0000-0000-000000000102', 'Solicitudes de trabajo (incidencia, requerimiento, desarrollo modular)',    NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000113', 'TAREAS',          'Tareas',           '/proyectos/tareas',        'check',    3, '00000000-0000-0000-0000-000000000102', 'Tareas ejecutables bajo cada subproyecto',                                   NOW(), '00000000-0000-0000-0000-000000000000');
+INSERT INTO msa_modulo (id, codigo, nombre, icono, orden, modulo_padre_id, descripcion, fecha_creacion, usuario_creacion) VALUES
+('00000000-0000-0000-0000-000000000111', 'SISTEMAS',        'Sistemas',         'server',   1, '00000000-0000-0000-0000-000000000102', 'Catalogo de sistemas existentes y nuevos por desarrollar',                  NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000112', 'SUBPROYECTOS',    'Subproyectos',     'layers',   2, '00000000-0000-0000-0000-000000000102', 'Solicitudes de trabajo (incidencia, requerimiento, desarrollo modular)',    NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000113', 'TAREAS',          'Tareas',           'check',    3, '00000000-0000-0000-0000-000000000102', 'Tareas ejecutables bajo cada subproyecto',                                   NOW(), '00000000-0000-0000-0000-000000000000');
 
 -- Submenus de Administracion (modulo_padre_id = 107)
-INSERT INTO msa_modulo (id, codigo, nombre, ruta, icono, orden, modulo_padre_id, descripcion, fecha_creacion, usuario_creacion) VALUES
-('00000000-0000-0000-0000-000000000121', 'USUARIOS',        'Usuarios',         '/admin/usuarios',  'user',      1, '00000000-0000-0000-0000-000000000107', 'Alta, edicion y baja de usuarios del sistema',                              NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000122', 'ROLES',           'Roles',            '/admin/roles',     'shield',    2, '00000000-0000-0000-0000-000000000107', 'Definicion de roles del sistema',                                            NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000123', 'CATALOGO',        'Catalogo',         '/admin/catalogo',  'list',      3, '00000000-0000-0000-0000-000000000107', 'Mantenimiento del catalogo unificado (tipos, prioridades, situaciones)',     NOW(), '00000000-0000-0000-0000-000000000000'),
-('00000000-0000-0000-0000-000000000124', 'MODULOS',         'Modulos',          '/admin/modulos',   'grid',      4, '00000000-0000-0000-0000-000000000107', 'Mantenimiento de modulos del sidebar y asignacion por rol',                  NOW(), '00000000-0000-0000-0000-000000000000');
+INSERT INTO msa_modulo (id, codigo, nombre, icono, orden, modulo_padre_id, descripcion, fecha_creacion, usuario_creacion) VALUES
+('00000000-0000-0000-0000-000000000121', 'USUARIOS',        'Usuarios',         'user',      1, '00000000-0000-0000-0000-000000000107', 'Alta, edicion y baja de usuarios del sistema',                              NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000122', 'ROLES',           'Roles',            'shield',    2, '00000000-0000-0000-0000-000000000107', 'Definicion de roles del sistema',                                            NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000123', 'CATALOGO',        'Catalogo',         'list',      3, '00000000-0000-0000-0000-000000000107', 'Mantenimiento del catalogo unificado (tipos, prioridades, situaciones)',     NOW(), '00000000-0000-0000-0000-000000000000'),
+('00000000-0000-0000-0000-000000000124', 'MODULOS',         'Modulos',          'grid',      4, '00000000-0000-0000-0000-000000000107', 'Mantenimiento de modulos del sidebar y asignacion por rol',                  NOW(), '00000000-0000-0000-0000-000000000000');
 
 -- ---------------------------------------------------------------------
 -- Asignaciones rol-modulo (RBAC del sidebar)

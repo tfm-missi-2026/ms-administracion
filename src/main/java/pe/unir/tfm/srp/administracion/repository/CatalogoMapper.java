@@ -11,19 +11,20 @@ import pe.unir.tfm.srp.administracion.model.Catalogo;
 @Mapper
 public interface CatalogoMapper {
 
-    Catalogo buscarPorId(@Param("id") UUID id);
+    Catalogo findById(@Param("id") UUID id);
 
-    List<Catalogo> listarPorGrupo(@Param("grupo") String grupo);
+    List<Catalogo> listActive();
 
-    List<Catalogo> listarActivos();
+    List<Catalogo> listByGroup(@Param("grupo") String grupo);
 
-    int contarPorGrupoIdOpcion(@Param("grupo") String grupo, @Param("idOpcion") Short idOpcion);
+    int countByGroupAndOptionId(@Param("grupo") String grupo,
+                                  @Param("idOpcion") Short idOpcion);
 
-    void insertar(Catalogo catalogo);
+    void insert(Catalogo catalogo);
 
-    void actualizar(Catalogo catalogo);
+    void update(Catalogo catalogo);
 
-    void eliminarLogico(@Param("id") UUID id,
-                        @Param("usuarioEliminacion") UUID usuarioEliminacion,
-                        @Param("motivoEliminacion") String motivoEliminacion);
+    void softDelete(@Param("id") UUID id,
+                     @Param("usuarioEliminacion") UUID usuarioEliminacion,
+                     @Param("motivoEliminacion") String motivoEliminacion);
 }

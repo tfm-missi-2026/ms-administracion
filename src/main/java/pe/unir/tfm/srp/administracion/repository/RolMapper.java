@@ -11,17 +11,32 @@ import pe.unir.tfm.srp.administracion.model.Rol;
 @Mapper
 public interface RolMapper {
 
-    Rol buscarPorId(@Param("id") UUID id);
+    Rol findById(@Param("id") UUID id);
 
-    Rol buscarPorCodigo(@Param("codigo") String codigo);
+    Rol findByCode(@Param("codigo") String codigo);
 
-    List<Rol> listarActivos();
+    List<Rol> listAll();
 
-    void insertar(Rol rol);
+    List<Rol> listActive();
 
-    void actualizar(Rol rol);
+    long countPaged(@Param("search") String search,
+                     @Param("sistema") Boolean sistema,
+                     @Param("estado") Integer estado);
 
-    void eliminarLogico(@Param("id") UUID id,
-                        @Param("usuarioEliminacion") UUID usuarioEliminacion,
-                        @Param("motivoEliminacion") String motivoEliminacion);
+    List<Rol> listPage(@Param("search") String search,
+                         @Param("sistema") Boolean sistema,
+                         @Param("estado") Integer estado,
+                         @Param("pageSize") int pageSize,
+                         @Param("offset") long offset,
+                         @Param("sortClause") String sortClause);
+
+    void insert(Rol rol);
+
+    void update(Rol rol);
+
+    long countUsosComoLanding(@Param("moduloId") UUID moduloId);
+
+    void softDelete(@Param("id") UUID id,
+                     @Param("usuarioEliminacion") UUID usuarioEliminacion,
+                     @Param("motivoEliminacion") String motivoEliminacion);
 }
