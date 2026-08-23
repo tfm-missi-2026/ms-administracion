@@ -88,6 +88,7 @@ public class RolService {
                 .build();
         rolMapper.insert(nuevo);
         garantizarLandingOtorgado(nuevo.getId(), paginaInicioId);
+        garantizarSeccionesOtorgadas(nuevo.getId());
         return rolConversor.aRolResponse(rolMapper.findById(nuevo.getId()));
     }
 
@@ -156,6 +157,7 @@ public class RolService {
                     .build();
             rolModuloMapper.insert(rm);
         }
+        garantizarSeccionesOtorgadas(rolId);
         List<Modulo> modulos = moduloMapper.listByRole(rolId);
         return moduloConversor.aModuloResponseList(modulos);
     }
@@ -184,6 +186,20 @@ public class RolService {
                     .moduloId(paginaInicioId)
                     .build();
             rolModuloMapper.insert(rm);
+        }
+    }
+
+    private void garantizarSeccionesOtorgadas(UUID rolId) {
+        List<Modulo> secciones = moduloMapper.listActiveSections();
+        for (Modulo seccion : secciones) {
+            if (rolModuloMapper.count(rolId, seccion.getId()) == 0) {
+                RolModulo rm = RolModulo.builder()
+                        .id(UUID.randomUUID())
+                        .rolId(rolId)
+                        .moduloId(seccion.getId())
+                        .build();
+                rolModuloMapper.insert(rm);
+            }
         }
     }
 }
