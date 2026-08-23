@@ -14,7 +14,9 @@ import pe.unir.tfm.srp.administracion.dto.conversor.UsuarioConversor;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioCrearRequest;
+import pe.unir.tfm.srp.administracion.dto.request.UsuarioQueryParams;
 import pe.unir.tfm.srp.administracion.dto.response.ModuloResponse;
+import pe.unir.tfm.srp.administracion.dto.response.PageData;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioActualResponse;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioResponse;
 import pe.unir.tfm.srp.administracion.exception.ConflictoNegocioException;
@@ -38,7 +40,28 @@ public class UsuarioService {
     private final ModuloConversor moduloConversor;
     private final CurrentUserResolver currentUserResolver;
 
-    public List<UsuarioResponse> list() {
+    public PageData<UsuarioResponse> listPage(UsuarioQueryParams params) {
+        String sortClause = params.resolveSortClause();
+        long total = usuarioMapper.countPaged(
+            params.getSearch(), params.getRolCodigo(), params.getEstado());
+        List<Usuario> items = usuarioMapper.listPage(
+            params.getSearch(), params.getRolCodigo(), params.getEstado(),
+            params.getPageSize(), params.offset(), sortClause);
+        return PageData.of(
+            usuarioConversor.aUsuarioResponseList(items),
+            total,
+            params.getPage(),
+            params.getPageSize()
+        );
+    }
+
+    /**
+     * Listado completo sin paginar. Conserva el comportamiento legacy
+     * que usan consumers como area-dashboard, planning, projects,
+     * resource-dashboard, team-load y variations. Para UI administrativas
+     * usar {@link #listPage(UsuarioQueryParams)}.
+     */
+    public List<UsuarioResponse> listAll() {
         return usuarioConversor.aUsuarioResponseList(usuarioMapper.listActive());
     }
 

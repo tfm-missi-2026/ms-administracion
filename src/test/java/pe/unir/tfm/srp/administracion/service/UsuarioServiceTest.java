@@ -147,12 +147,12 @@ class UsuarioServiceTest {
     }
 
     @Test
-    void list_delegaMappersYConversor() {
+    void listAll_delegaMappersYConversor() {
         Usuario u = usuarioActivo();
         when(usuarioMapper.listActive()).thenReturn(List.of(u));
         when(usuarioConversor.aUsuarioResponseList(List.of(u))).thenReturn(List.of());
 
-        usuarioService.list();
+        usuarioService.listAll();
 
         verify(usuarioMapper).listActive();
         verify(usuarioConversor).aUsuarioResponseList(List.of(u));

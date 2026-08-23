@@ -21,6 +21,8 @@ import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
 import pe.unir.tfm.srp.administracion.dto.request.ResetPasswordRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioCrearRequest;
+import pe.unir.tfm.srp.administracion.dto.request.UsuarioQueryParams;
+import pe.unir.tfm.srp.administracion.dto.response.PageData;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioActualResponse;
 import pe.unir.tfm.srp.administracion.dto.response.UsuarioResponse;
 import pe.unir.tfm.srp.administracion.service.UsuarioService;
@@ -40,8 +42,14 @@ public class UsuarioController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UsuarioResponse>> list() {
-        return ResponseEntity.ok(usuarioService.list());
+    public ResponseEntity<PageData<UsuarioResponse>> list(@Valid UsuarioQueryParams params) {
+        return ResponseEntity.ok(usuarioService.listPage(params));
+    }
+
+    @GetMapping("/todos")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UsuarioResponse>> listAll() {
+        return ResponseEntity.ok(usuarioService.listAll());
     }
 
     @GetMapping("/{id}")

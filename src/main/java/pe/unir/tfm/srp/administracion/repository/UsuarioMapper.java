@@ -17,6 +17,17 @@ public interface UsuarioMapper {
 
     List<Usuario> listActive();
 
+    long countPaged(@Param("search") String search,
+                    @Param("rolCodigo") String rolCodigo,
+                    @Param("estado") Integer estado);
+
+    List<Usuario> listPage(@Param("search") String search,
+                           @Param("rolCodigo") String rolCodigo,
+                           @Param("estado") Integer estado,
+                           @Param("pageSize") int pageSize,
+                           @Param("offset") long offset,
+                           @Param("sortClause") String sortClause);
+
     int countByEmail(@Param("email") String email);
 
     void insert(Usuario usuario);

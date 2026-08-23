@@ -60,6 +60,39 @@
         ORDER BY u.apellido_paterno, u.apellido_materno, u.nombres
     </select>
 
+    <!-- Filtros compartidos entre `countPaged` y `listPage`. -->
+    <sql id="filtrosUsuario">
+        <if test="search != null and search != ''">
+            AND (u.email ILIKE '%' || #{search} || '%'
+              OR u.nombres ILIKE '%' || #{search} || '%'
+              OR u.apellido_paterno ILIKE '%' || #{search} || '%'
+              OR u.apellido_materno ILIKE '%' || #{search} || '%')
+        </if>
+        <if test="rolCodigo != null and rolCodigo != ''">
+            AND r.codigo = #{rolCodigo}
+        </if>
+        <if test="estado != null">
+            AND u.estado = #{estado}
+        </if>
+    </sql>
+
+    <select id="countPaged" resultType="long">
+        SELECT COUNT(*) FROM msa_usuario u
+        JOIN msa_rol r ON r.id = u.rol_id
+        <where><include refid="filtrosUsuario"/></where>
+    </select>
+
+    <select id="listPage" resultMap="usuarioConRol">
+        <include refid="selectUsuarioRol"/>
+        <where><include refid="filtrosUsuario"/></where>
+        ORDER BY
+        <choose>
+            <when test="sortClause != null">${sortClause}</when>
+            <otherwise>u.apellido_paterno, u.apellido_materno, u.nombres</otherwise>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
     <select id="countByEmail" parameterType="string" resultType="int">
         SELECT COUNT(*) FROM msa_usuario WHERE email = #{email} AND estado = 1
     </select>
