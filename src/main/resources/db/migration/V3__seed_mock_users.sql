@@ -16,10 +16,11 @@
 --   - Pedro Soria    -> ADMIN           (acceso completo)
 --   - Marcos Pacheco  -> GESTOR_PROYECTO (proyectos + planificacion)
 --   - Edwin Pacheco   -> RECURSO_TECNICO (bitacora + variaciones)
+--   - Juan Perez      -> JEFE_AREA       (carga y avance del area)
 --
 -- UUIDs deterministicos (extension del rango seed):
 --   admin  existente   00000000-0000-0000-0000-000000000900
---   nuevos mock users  00000000-0000-0000-0000-000000000901..903
+--   nuevos mock users  00000000-0000-0000-0000-000000000901..904
 -- =====================================================================
 
 INSERT INTO msa_usuario (id, email, contrasenia, nombres, apellido_paterno, apellido_materno, rol_id, fecha_creacion, usuario_creacion) VALUES
@@ -50,5 +51,15 @@ INSERT INTO msa_usuario (id, email, contrasenia, nombres, apellido_paterno, apel
  'Pacheco',
  '',
  '00000000-0000-0000-0000-000000000004',
+ NOW(),
+ '00000000-0000-0000-0000-000000000000'),
+
+('00000000-0000-0000-0000-000000000904',
+ 'juan.perez@institucion.gob.pe',
+ crypt('Spsrt.2026', gen_salt('bf', 10)),
+ 'Juan',
+ 'Perez',
+ '',
+ '00000000-0000-0000-0000-000000000002',
  NOW(),
  '00000000-0000-0000-0000-000000000000');
