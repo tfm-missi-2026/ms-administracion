@@ -9,9 +9,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
 import pe.unir.tfm.srp.administracion.dto.conversor.ModuloConversor;
+import pe.unir.tfm.srp.administracion.dto.request.ModuloActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.ModuloCrearRequest;
 import pe.unir.tfm.srp.administracion.dto.request.ModuloEstadoRequest;
-import pe.unir.tfm.srp.administracion.dto.request.ModuloActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.ModuloQueryParams;
 import pe.unir.tfm.srp.administracion.dto.response.ModuloResponse;
 import pe.unir.tfm.srp.administracion.dto.response.PageData;
@@ -121,7 +121,7 @@ public class ModuloService {
      */
     @Transactional
     public ModuloResponse changeState(UUID id, ModuloEstadoRequest request) {
-        if (request.estado() == null || (request.estado() != 0 && request.estado() != 1)) {
+        if (request.estado() != 0 && request.estado() != 1) {
             throw new ConflictoNegocioException(
                     "El estado debe ser 0 (deshabilitado) o 1 (habilitado)");
         }

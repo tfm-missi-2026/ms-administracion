@@ -21,6 +21,8 @@ public interface ModuloMapper {
 
     List<Modulo> listActive();
 
+    List<Modulo> listActiveSections();
+
     List<Modulo> listAll();
 
     List<Modulo> listByRole(@Param("rolId") UUID rolId);

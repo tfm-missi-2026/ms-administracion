@@ -53,6 +53,17 @@
         ORDER BY s.orden NULLS LAST, m.modulo_padre_id NULLS FIRST, m.orden
     </select>
 
+    <select id="listActiveSections" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
+        SELECT m.id, m.codigo, m.nombre, m.icono, m.orden, m.modulo_padre_id,
+               m.seccion, m.tipo, m.sistema, m.descripcion,
+               m.estado, m.fecha_creacion, m.usuario_creacion,
+               m.fecha_modificacion, m.usuario_modificacion,
+               m.fecha_eliminacion, m.usuario_eliminacion, m.motivo_eliminacion
+          FROM msa_modulo m
+         WHERE m.tipo = 'SECTION' AND m.estado = 1
+         ORDER BY m.orden
+    </select>
+
     <select id="listAll" resultType="pe.unir.tfm.srp.administracion.model.Modulo">
         <include refid="selectAll"/>
         ORDER BY s.orden NULLS LAST, m.modulo_padre_id NULLS FIRST, m.orden
