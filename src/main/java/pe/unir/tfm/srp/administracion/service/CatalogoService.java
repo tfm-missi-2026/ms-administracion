@@ -49,12 +49,13 @@ public class CatalogoService {
                     "Ya existe un catalogo con grupo " + request.grupo() + " e idOpcion " + request.idOpcion());
         }
         Catalogo nuevo = Catalogo.builder()
+                .id(UUID.randomUUID())
                 .grupo(request.grupo())
                 .idOpcion(request.idOpcion())
                 .opcion(request.opcion())
                 .build();
         catalogoMapper.insert(nuevo);
-        return catalogoConversor.aCatalogoResponse(nuevo);
+        return catalogoConversor.aCatalogoResponse(catalogoMapper.findById(nuevo.getId()));
     }
 
     @Transactional

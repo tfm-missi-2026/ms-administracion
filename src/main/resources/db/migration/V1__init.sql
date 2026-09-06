@@ -32,7 +32,7 @@ CREATE TABLE msa_rol (
     motivo_eliminacion   VARCHAR(500)
 );
 
-CREATE UNIQUE INDEX idx_msa_rol_codigo ON msa_rol(codigo);
+CREATE UNIQUE INDEX idx_msa_rol_codigo ON msa_rol(codigo) WHERE estado = 1;
 
 COMMENT ON TABLE  msa_rol IS 'Catalogo maestro de roles del sistema';
 COMMENT ON COLUMN msa_rol.id IS 'Identificador unico del rol';
@@ -69,7 +69,7 @@ CREATE TABLE msa_usuario (
     motivo_eliminacion   VARCHAR(500)
 );
 
-CREATE UNIQUE INDEX idx_msa_usuario_email ON msa_usuario(email);
+CREATE UNIQUE INDEX idx_msa_usuario_email ON msa_usuario(email) WHERE estado = 1;
 CREATE INDEX idx_msa_usuario_rol ON msa_usuario(rol_id);
 
 COMMENT ON TABLE  msa_usuario IS 'Usuarios del sistema con credenciales y datos basicos';
@@ -107,7 +107,7 @@ CREATE TABLE msa_catalogo (
     motivo_eliminacion   VARCHAR(500)
 );
 
-CREATE UNIQUE INDEX uk_msa_catalogo_grupo_opcion ON msa_catalogo(grupo, id_opcion);
+CREATE UNIQUE INDEX uk_msa_catalogo_grupo_opcion ON msa_catalogo(grupo, id_opcion) WHERE estado = 1;
 
 COMMENT ON TABLE  msa_catalogo IS 'Catalogo generico unificado del sistema (sirve a todos los MS via cross-BD)';
 COMMENT ON COLUMN msa_catalogo.id IS 'Identificador unico del item de catalogo';
@@ -144,7 +144,7 @@ CREATE TABLE msa_modulo (
     motivo_eliminacion   VARCHAR(500)
 );
 
-CREATE UNIQUE INDEX idx_msa_modulo_codigo ON msa_modulo(codigo);
+CREATE UNIQUE INDEX idx_msa_modulo_codigo ON msa_modulo(codigo) WHERE estado = 1;
 CREATE INDEX idx_msa_modulo_padre ON msa_modulo(modulo_padre_id);
 
 COMMENT ON TABLE  msa_modulo IS 'Modulos del sidebar del frontend (con jerarquia opcional para submenus)';
@@ -181,7 +181,7 @@ CREATE TABLE msa_rol_modulo (
     motivo_eliminacion   VARCHAR(500)
 );
 
-CREATE UNIQUE INDEX uk_msa_rol_modulo ON msa_rol_modulo(rol_id, modulo_id);
+CREATE UNIQUE INDEX uk_msa_rol_modulo ON msa_rol_modulo(rol_id, modulo_id) WHERE estado = 1;
 CREATE INDEX idx_msa_rol_modulo_rol ON msa_rol_modulo(rol_id);
 CREATE INDEX idx_msa_rol_modulo_modulo ON msa_rol_modulo(modulo_id);
 
