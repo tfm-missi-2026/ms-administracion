@@ -47,7 +47,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/todos")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'JEFE_AREA', 'GESTOR_PROYECTO', 'RECURSO_TECNICO')")
     public ResponseEntity<List<UsuarioResponse>> listAll() {
         return ResponseEntity.ok(usuarioService.listAll());
     }
