@@ -11,8 +11,10 @@ import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
 import pe.unir.tfm.srp.administracion.dto.conversor.CatalogoConversor;
 import pe.unir.tfm.srp.administracion.dto.request.CatalogoActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.CatalogoCrearRequest;
+import pe.unir.tfm.srp.administracion.dto.request.CatalogoQueryParams;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
 import pe.unir.tfm.srp.administracion.dto.response.CatalogoResponse;
+import pe.unir.tfm.srp.administracion.dto.response.PageData;
 import pe.unir.tfm.srp.administracion.exception.ConflictoNegocioException;
 import pe.unir.tfm.srp.administracion.exception.RecursoNoEncontradoException;
 import pe.unir.tfm.srp.administracion.model.Catalogo;
@@ -28,6 +30,21 @@ public class CatalogoService {
 
     public List<CatalogoResponse> list() {
         return catalogoConversor.aCatalogoResponseList(catalogoMapper.listActive());
+    }
+
+    public PageData<CatalogoResponse> listPage(CatalogoQueryParams params) {
+        String sortClause = params.resolveSortClause();
+        long total = catalogoMapper.countPaged(
+            params.getSearch(), params.getGrupo(), params.getEstado());
+        List<Catalogo> items = catalogoMapper.listPage(
+            params.getSearch(), params.getGrupo(), params.getEstado(),
+            params.getPageSize(), params.offset(), sortClause);
+        return PageData.of(
+            catalogoConversor.aCatalogoResponseList(items),
+            total,
+            params.getPage(),
+            params.getPageSize()
+        );
     }
 
     public List<CatalogoResponse> listByGroup(String grupo) {

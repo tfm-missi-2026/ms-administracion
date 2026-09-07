@@ -27,6 +27,39 @@
         ORDER BY grupo, id_opcion
     </select>
 
+    <sql id="filtrosCatalogo">
+        <if test="search != null and search != ''">
+            AND (c.opcion ILIKE '%' || #{search} || '%'
+              OR CAST(c.id_opcion AS TEXT) ILIKE '%' || #{search} || '%')
+        </if>
+        <if test="grupo != null and grupo != ''">
+            AND c.grupo = #{grupo}
+        </if>
+        <if test="estado != null">
+            AND c.estado = #{estado}
+        </if>
+    </sql>
+
+    <select id="countPaged" resultType="long">
+        SELECT COUNT(*) FROM msa_catalogo c
+        <where><include refid="filtrosCatalogo"/></where>
+    </select>
+
+    <select id="listPage" resultType="pe.unir.tfm.srp.administracion.model.Catalogo">
+        SELECT id, grupo, id_opcion, opcion,
+               estado, fecha_creacion, usuario_creacion,
+               fecha_modificacion, usuario_modificacion,
+               fecha_eliminacion, usuario_eliminacion, motivo_eliminacion
+          FROM msa_catalogo c
+        <where><include refid="filtrosCatalogo"/></where>
+        ORDER BY
+        <choose>
+            <when test="sortClause != null">${sortClause}</when>
+            <otherwise>grupo, id_opcion</otherwise>
+        </choose>
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
     <select id="countByGroupAndOptionId" resultType="int">
         SELECT COUNT(*) FROM msa_catalogo
          WHERE grupo = #{grupo} AND id_opcion = #{idOpcion} AND estado = 1

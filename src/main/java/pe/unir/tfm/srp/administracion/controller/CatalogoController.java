@@ -18,8 +18,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import pe.unir.tfm.srp.administracion.dto.request.CatalogoActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.CatalogoCrearRequest;
+import pe.unir.tfm.srp.administracion.dto.request.CatalogoQueryParams;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
 import pe.unir.tfm.srp.administracion.dto.response.CatalogoResponse;
+import pe.unir.tfm.srp.administracion.dto.response.PageData;
 import pe.unir.tfm.srp.administracion.service.CatalogoService;
 
 @RestController
@@ -30,7 +32,12 @@ public class CatalogoController {
     private final CatalogoService catalogoService;
 
     @GetMapping
-    public ResponseEntity<List<CatalogoResponse>> list() {
+    public ResponseEntity<PageData<CatalogoResponse>> list(@Valid CatalogoQueryParams params) {
+        return ResponseEntity.ok(catalogoService.listPage(params));
+    }
+
+    @GetMapping("/todos")
+    public ResponseEntity<List<CatalogoResponse>> listAll() {
         return ResponseEntity.ok(catalogoService.list());
     }
 

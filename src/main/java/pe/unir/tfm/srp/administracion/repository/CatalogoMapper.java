@@ -17,6 +17,17 @@ public interface CatalogoMapper {
 
     List<Catalogo> listByGroup(@Param("grupo") String grupo);
 
+    long countPaged(@Param("search") String search,
+                    @Param("grupo") String grupo,
+                    @Param("estado") Integer estado);
+
+    List<Catalogo> listPage(@Param("search") String search,
+                            @Param("grupo") String grupo,
+                            @Param("estado") Integer estado,
+                            @Param("pageSize") int pageSize,
+                            @Param("offset") long offset,
+                            @Param("sortClause") String sortClause);
+
     int countByGroupAndOptionId(@Param("grupo") String grupo,
                                   @Param("idOpcion") Short idOpcion);
 
