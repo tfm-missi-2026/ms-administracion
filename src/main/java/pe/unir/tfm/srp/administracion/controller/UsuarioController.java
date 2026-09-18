@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
+import pe.unir.tfm.srp.administracion.dto.request.CambiarContraseniaRequest;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
 import pe.unir.tfm.srp.administracion.dto.request.ResetPasswordRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioActualizarRequest;
@@ -75,6 +76,12 @@ public class UsuarioController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable UUID id, @Valid @RequestBody EliminacionRequest request) {
         usuarioService.delete(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/me/password")
+    public ResponseEntity<Void> cambiarContrasenia(@Valid @RequestBody CambiarContraseniaRequest request) {
+        usuarioService.cambiarContrasenia(currentUserResolver.obtenerUsuarioActualId(), request);
         return ResponseEntity.noContent().build();
     }
 

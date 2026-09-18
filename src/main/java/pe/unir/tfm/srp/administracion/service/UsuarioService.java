@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import pe.unir.tfm.srp.administracion.config.CurrentUserResolver;
 import pe.unir.tfm.srp.administracion.dto.conversor.ModuloConversor;
 import pe.unir.tfm.srp.administracion.dto.conversor.UsuarioConversor;
+import pe.unir.tfm.srp.administracion.dto.request.CambiarContraseniaRequest;
 import pe.unir.tfm.srp.administracion.dto.request.EliminacionRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioActualizarRequest;
 import pe.unir.tfm.srp.administracion.dto.request.UsuarioCrearRequest;
@@ -134,6 +135,22 @@ public class UsuarioService {
             throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
         }
         usuarioMapper.softDelete(id, currentUserResolver.obtenerUsuarioActualId(), request.motivoEliminacion());
+    }
+
+    @Transactional
+    public void cambiarContrasenia(UUID id, CambiarContraseniaRequest request) {
+        Usuario existente = usuarioMapper.findById(id);
+        if (existente == null) {
+            throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
+        }
+        if (!passwordEncoder.matches(request.contraseniaActual(), existente.getContrasenia())) {
+            throw new ConflictoNegocioException("La contraseña actual no es correcta.");
+        }
+        String hash = passwordEncoder.encode(request.contraseniaNueva());
+        int filas = usuarioMapper.updatePassword(id, hash, id);
+        if (filas == 0) {
+            throw new RecursoNoEncontradoException("Usuario " + id + " no encontrado");
+        }
     }
 
     @Transactional
