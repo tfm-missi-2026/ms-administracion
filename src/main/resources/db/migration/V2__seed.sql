@@ -71,13 +71,13 @@ FROM msa_modulo m;
 INSERT INTO msa_rol_modulo (rol_id, modulo_id, fecha_creacion, usuario_creacion)
 SELECT '00000000-0000-0000-0000-000000000002', m.id, NOW(), '00000000-0000-0000-0000-000000000000'
 FROM msa_modulo m
-WHERE m.codigo NOT IN ('ADMINISTRACION', 'USUARIOS', 'ROLES', 'CATALOGO', 'MODULOS');
+WHERE m.codigo NOT IN ('ADMINISTRACION', 'USUARIOS', 'ROLES', 'CATALOGO', 'MODULOS', 'BITACORA');
 
 -- GESTOR_PROYECTO: ve los mismos que JEFE_AREA (9 filas)
 INSERT INTO msa_rol_modulo (rol_id, modulo_id, fecha_creacion, usuario_creacion)
 SELECT '00000000-0000-0000-0000-000000000003', m.id, NOW(), '00000000-0000-0000-0000-000000000000'
 FROM msa_modulo m
-WHERE m.codigo NOT IN ('ADMINISTRACION', 'USUARIOS', 'ROLES', 'CATALOGO', 'MODULOS');
+WHERE m.codigo NOT IN ('ADMINISTRACION', 'USUARIOS', 'ROLES', 'CATALOGO', 'MODULOS', 'BITACORA');
 
 -- RECURSO_TECNICO: solo Inicio, Mi Bitacora y Variaciones (3 filas)
 INSERT INTO msa_rol_modulo (rol_id, modulo_id, fecha_creacion, usuario_creacion)
