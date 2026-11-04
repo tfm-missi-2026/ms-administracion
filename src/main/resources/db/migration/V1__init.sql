@@ -1,18 +1,67 @@
 -- =====================================================================
 -- Sistema      : SPSRT - Sistema de Planificacion y Seguimiento de Recursos Tecnicos
 -- Modulo       : MS Administracion
--- Objetivo     : Esquema inicial del MS Administracion. Crea las 5 tablas
---                (msa_rol, msa_usuario, msa_catalogo, msa_modulo,
+-- Objetivo     : Esquema del MS Administracion. Crea las 5 tablas
+--                (msa_modulo, msa_rol, msa_usuario, msa_catalogo,
 --                msa_rol_modulo) con sus indices, restricciones y
 --                comentarios de tabla y columnas.
 -- Desarrollado : Equipo SPSRT - UNIR
--- Fecha        : 2026-05-27
+-- Fecha        : 2026-11-03
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
 -- Extension requerida para gen_random_uuid() (PK uuid de todas las tablas)
 -- ---------------------------------------------------------------------
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- ---------------------------------------------------------------------
+-- Tabla msa_modulo
+-- ---------------------------------------------------------------------
+CREATE TABLE msa_modulo (
+    id                   UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
+    codigo               VARCHAR(50)  NOT NULL UNIQUE,
+    nombre               VARCHAR(100) NOT NULL,
+    icono                VARCHAR(50),
+    orden                SMALLINT     NOT NULL,
+    modulo_padre_id      UUID         REFERENCES msa_modulo(id),
+    tipo                 VARCHAR(20)  NOT NULL DEFAULT 'MENU' CHECK (tipo IN ('SECTION', 'MENU', 'SUBMENU')),
+    seccion              VARCHAR(40)  NOT NULL DEFAULT 'OPERACION',
+    sistema              SMALLINT     NOT NULL DEFAULT 1,
+    descripcion          TEXT,
+    estado               SMALLINT     NOT NULL DEFAULT 1 CHECK (estado IN (0, 1)),
+    fecha_creacion       TIMESTAMP    NOT NULL,
+    usuario_creacion     UUID         NOT NULL,
+    fecha_modificacion   TIMESTAMP,
+    usuario_modificacion UUID,
+    fecha_eliminacion    TIMESTAMP,
+    usuario_eliminacion  UUID,
+    motivo_eliminacion   VARCHAR(500)
+);
+
+CREATE UNIQUE INDEX idx_msa_modulo_codigo ON msa_modulo(codigo) WHERE estado = 1;
+CREATE INDEX idx_msa_modulo_padre ON msa_modulo(modulo_padre_id);
+CREATE INDEX idx_msa_modulo_seccion ON msa_modulo(seccion);
+CREATE INDEX idx_msa_modulo_sistema ON msa_modulo(sistema);
+
+COMMENT ON TABLE  msa_modulo IS 'Modulos del sidebar del frontend (con jerarquia opcional para submenus)';
+COMMENT ON COLUMN msa_modulo.id IS 'Identificador unico del modulo';
+COMMENT ON COLUMN msa_modulo.codigo IS 'Codigo unico del modulo (PROYECTOS, TAREAS, ASIGNACIONES, VARIACIONES, USUARIOS, etc.)';
+COMMENT ON COLUMN msa_modulo.nombre IS 'Nombre visible en el sidebar';
+COMMENT ON COLUMN msa_modulo.icono IS 'Nombre del icono del sidebar (ej. heroicon name)';
+COMMENT ON COLUMN msa_modulo.orden IS 'Orden de aparicion en el sidebar';
+COMMENT ON COLUMN msa_modulo.modulo_padre_id IS 'FK al modulo padre (NULL si es de primer nivel; permite submenus)';
+COMMENT ON COLUMN msa_modulo.tipo IS 'Tipo del modulo: SECTION=cabecera de sidebar, MENU=item plano, SUBMENU=item reservado para jerarquia futura.';
+COMMENT ON COLUMN msa_modulo.seccion IS 'Seccion del sidebar (OPERACION, SEGUIMIENTO, ADMINISTRACION, CUENTA). Default OPERACION.';
+COMMENT ON COLUMN msa_modulo.sistema IS '1 si es modulo del sistema (no editable por UI); 0 si es custom.';
+COMMENT ON COLUMN msa_modulo.descripcion IS 'Descripcion del modulo';
+COMMENT ON COLUMN msa_modulo.estado IS 'Estado del registro (0=inactivo, 1=activo)';
+COMMENT ON COLUMN msa_modulo.fecha_creacion IS 'Fecha y hora de creacion del registro';
+COMMENT ON COLUMN msa_modulo.usuario_creacion IS 'UUID del usuario que creo el registro';
+COMMENT ON COLUMN msa_modulo.fecha_modificacion IS 'Fecha y hora de ultima modificacion';
+COMMENT ON COLUMN msa_modulo.usuario_modificacion IS 'UUID del usuario que modifico el registro';
+COMMENT ON COLUMN msa_modulo.fecha_eliminacion IS 'Fecha y hora de eliminacion logica (NULL si activo)';
+COMMENT ON COLUMN msa_modulo.usuario_eliminacion IS 'UUID del usuario que elimino el registro (NULL si activo)';
+COMMENT ON COLUMN msa_modulo.motivo_eliminacion IS 'Motivo de la eliminacion logica (obligatorio si fecha_eliminacion IS NOT NULL)';
 
 -- ---------------------------------------------------------------------
 -- Tabla msa_rol
@@ -22,6 +71,8 @@ CREATE TABLE msa_rol (
     codigo               VARCHAR(50)  NOT NULL UNIQUE,
     nombre               VARCHAR(100) NOT NULL,
     descripcion          VARCHAR(500),
+    sistema              SMALLINT     NOT NULL DEFAULT 0,
+    pagina_inicio_id     UUID         REFERENCES msa_modulo(id),
     estado               SMALLINT     NOT NULL DEFAULT 1 CHECK (estado IN (0, 1)),
     fecha_creacion       TIMESTAMP    NOT NULL,
     usuario_creacion     UUID         NOT NULL,
@@ -33,12 +84,15 @@ CREATE TABLE msa_rol (
 );
 
 CREATE UNIQUE INDEX idx_msa_rol_codigo ON msa_rol(codigo) WHERE estado = 1;
+CREATE INDEX idx_msa_rol_pagina_inicio ON msa_rol(pagina_inicio_id);
 
 COMMENT ON TABLE  msa_rol IS 'Catalogo maestro de roles del sistema';
 COMMENT ON COLUMN msa_rol.id IS 'Identificador unico del rol';
 COMMENT ON COLUMN msa_rol.codigo IS 'Codigo unico del rol (ADMIN, JEFE_AREA, GESTOR_PROYECTO, RECURSO_TECNICO)';
 COMMENT ON COLUMN msa_rol.nombre IS 'Nombre legible del rol';
 COMMENT ON COLUMN msa_rol.descripcion IS 'Descripcion extendida del rol';
+COMMENT ON COLUMN msa_rol.sistema IS '1 si es rol del sistema (no editable/eliminable por UI); 0 si es custom.';
+COMMENT ON COLUMN msa_rol.pagina_inicio_id IS 'Modulo que ve el usuario de este rol tras el login (nullable en BD; obligatorio por API/UI). El frontend lo resuelve con MODULO_REGISTRY (codigo -> path).';
 COMMENT ON COLUMN msa_rol.estado IS 'Estado del registro (0=inactivo, 1=activo)';
 COMMENT ON COLUMN msa_rol.fecha_creacion IS 'Fecha y hora de creacion del registro';
 COMMENT ON COLUMN msa_rol.usuario_creacion IS 'UUID del usuario que creo el registro';
@@ -122,47 +176,6 @@ COMMENT ON COLUMN msa_catalogo.usuario_modificacion IS 'UUID del usuario que mod
 COMMENT ON COLUMN msa_catalogo.fecha_eliminacion IS 'Fecha y hora de eliminacion logica (NULL si activo)';
 COMMENT ON COLUMN msa_catalogo.usuario_eliminacion IS 'UUID del usuario que elimino el registro (NULL si activo)';
 COMMENT ON COLUMN msa_catalogo.motivo_eliminacion IS 'Motivo de la eliminacion logica (obligatorio si fecha_eliminacion IS NOT NULL)';
-
--- ---------------------------------------------------------------------
--- Tabla msa_modulo
--- ---------------------------------------------------------------------
-CREATE TABLE msa_modulo (
-    id                   UUID         PRIMARY KEY DEFAULT gen_random_uuid(),
-    codigo               VARCHAR(50)  NOT NULL UNIQUE,
-    nombre               VARCHAR(100) NOT NULL,
-    icono                VARCHAR(50),
-    orden                SMALLINT     NOT NULL,
-    modulo_padre_id      UUID         REFERENCES msa_modulo(id),
-    descripcion          TEXT,
-    estado               SMALLINT     NOT NULL DEFAULT 1 CHECK (estado IN (0, 1)),
-    fecha_creacion       TIMESTAMP    NOT NULL,
-    usuario_creacion     UUID         NOT NULL,
-    fecha_modificacion   TIMESTAMP,
-    usuario_modificacion UUID,
-    fecha_eliminacion    TIMESTAMP,
-    usuario_eliminacion  UUID,
-    motivo_eliminacion   VARCHAR(500)
-);
-
-CREATE UNIQUE INDEX idx_msa_modulo_codigo ON msa_modulo(codigo) WHERE estado = 1;
-CREATE INDEX idx_msa_modulo_padre ON msa_modulo(modulo_padre_id);
-
-COMMENT ON TABLE  msa_modulo IS 'Modulos del sidebar del frontend (con jerarquia opcional para submenus)';
-COMMENT ON COLUMN msa_modulo.id IS 'Identificador unico del modulo';
-COMMENT ON COLUMN msa_modulo.codigo IS 'Codigo unico del modulo (PROYECTOS, TAREAS, ASIGNACIONES, VARIACIONES, USUARIOS, etc.)';
-COMMENT ON COLUMN msa_modulo.nombre IS 'Nombre visible en el sidebar';
-COMMENT ON COLUMN msa_modulo.icono IS 'Nombre del icono del sidebar (ej. heroicon name)';
-COMMENT ON COLUMN msa_modulo.orden IS 'Orden de aparicion en el sidebar';
-COMMENT ON COLUMN msa_modulo.modulo_padre_id IS 'FK al modulo padre (NULL si es de primer nivel; permite submenus)';
-COMMENT ON COLUMN msa_modulo.descripcion IS 'Descripcion del modulo';
-COMMENT ON COLUMN msa_modulo.estado IS 'Estado del registro (0=inactivo, 1=activo)';
-COMMENT ON COLUMN msa_modulo.fecha_creacion IS 'Fecha y hora de creacion del registro';
-COMMENT ON COLUMN msa_modulo.usuario_creacion IS 'UUID del usuario que creo el registro';
-COMMENT ON COLUMN msa_modulo.fecha_modificacion IS 'Fecha y hora de ultima modificacion';
-COMMENT ON COLUMN msa_modulo.usuario_modificacion IS 'UUID del usuario que modifico el registro';
-COMMENT ON COLUMN msa_modulo.fecha_eliminacion IS 'Fecha y hora de eliminacion logica (NULL si activo)';
-COMMENT ON COLUMN msa_modulo.usuario_eliminacion IS 'UUID del usuario que elimino el registro (NULL si activo)';
-COMMENT ON COLUMN msa_modulo.motivo_eliminacion IS 'Motivo de la eliminacion logica (obligatorio si fecha_eliminacion IS NOT NULL)';
 
 -- ---------------------------------------------------------------------
 -- Tabla msa_rol_modulo
